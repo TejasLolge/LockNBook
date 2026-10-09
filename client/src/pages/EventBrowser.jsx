@@ -63,13 +63,38 @@ export default function EventBrowser() {
     setSearchParams({});
   };
 
-  // Sort events
+  const currentSort = searchParams.get('sort') || 'date';
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+
+  const handleSortChange = (newSort) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('sort', newSort);
+    setSearchParams(params);
+    setSortDropdownOpen(false);
+  };
+
+  // Sort events with comprehensive criteria
   const sortedEvents = [...events].sort((a, b) => {
-    if (sortBy === 'price-asc') return a.price - b.price;
-    if (sortBy === 'price-desc') return b.price - a.price;
-    if (sortBy === 'title') return a.title.localeCompare(b.title);
+    if (currentSort === 'price-asc') return a.price - b.price;
+    if (currentSort === 'price-desc') return b.price - a.price;
+    if (currentSort === 'inventory') {
+      const aInv = a.availableInventory ?? 999;
+      const bInv = b.availableInventory ?? 999;
+      return aInv - bInv;
+    }
+    if (currentSort === 'title') return a.title.localeCompare(b.title);
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
+
+  const sortOptions = [
+    { id: 'date', label: 'Date (Upcoming First)' },
+    { id: 'price-asc', label: 'Price: Low to High' },
+    { id: 'price-desc', label: 'Price: High to Low' },
+    { id: 'inventory', label: 'Selling Fast (Fewest Left)' },
+    { id: 'title', label: 'Title (A – Z)' }
+  ];
+
+  const currentSortLabel = sortOptions.find(o => o.id === currentSort)?.label || 'Date (Upcoming First)';
 
   return (
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '4rem' }}>
@@ -103,31 +128,125 @@ export default function EventBrowser() {
           placeholder="Filter by title, artist, or venue..."
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', color: 'var(--text-secondary)', fontSize: '0.875rem', fontWeight: 600 }}>
-            <ArrowUpDown size={15} />
-            <span>Sort by:</span>
-          </div>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="form-input"
-            style={{ width: 'auto', height: '38px', padding: '0 0.75rem', fontSize: '0.875rem' }}
+        {/* Interactive Sort Button & Dropdown */}
+        <div style={{ position: 'relative', marginLeft: 'auto' }}>
+          <button
+            onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+            className="btn btn-secondary"
+            style={{
+              gap: '0.5rem',
+              borderColor: currentSort !== 'date' ? 'var(--primary-border)' : 'var(--border-light)',
+              backgroundColor: currentSort !== 'date' ? 'var(--primary-light)' : 'var(--bg-white)',
+              color: currentSort !== 'date' ? 'var(--primary)' : 'var(--text-main)',
+              fontWeight: 600
+            }}
+            aria-expanded={sortDropdownOpen}
           >
-            <option value="date">Date (Earliest First)</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="title">Title (A &ndash; Z)</option>
-          </select>
+            <ArrowUpDown size={16} color={currentSort !== 'date' ? 'var(--primary)' : 'var(--text-secondary)'} />
+            <span>Sort: <strong>{currentSortLabel}</strong></span>
+            <span style={{ fontSize: '0.75rem', marginLeft: '0.25rem' }}>▼</span>
+          </button>
+
+          {sortDropdownOpen && (
+            <div style={{
+              position: 'absolute',
+              right: 0,
+              top: 'calc(100% + 6px)',
+              zIndex: 30,
+              backgroundColor: 'var(--bg-white)',
+              border: '1px solid var(--border-light)',
+              borderRadius: 'var(--radius-md)',
+              boxShadow: 'var(--shadow-modal)',
+              minWidth: '240px',
+              padding: '0.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.25rem'
+            }}>
+              <div style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                padding: '0.375rem 0.625rem',
+                borderBottom: '1px solid var(--border-light)',
+                marginBottom: '0.25rem'
+              }}>
+                Sort Events By
+              </div>
+              {sortOptions.map(opt => {
+                const isSelected = currentSort === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => handleSortChange(opt.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: 'var(--radius-sm)',
+                      border: 'none',
+                      backgroundColor: isSelected ? 'var(--primary-light)' : 'transparent',
+                      color: isSelected ? 'var(--primary)' : 'var(--text-main)',
+                      fontWeight: isSelected ? 700 : 500,
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'background-color 0.15s ease'
+                    }}
+                  >
+                    <span>{opt.label}</span>
+                    {isSelected && <span style={{ color: 'var(--primary)', fontWeight: 800 }}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Category Filter Pills */}
-      <div style={{ marginBottom: '2rem' }}>
+      {/* Category Filter Pills & Quick Sort Bar */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        marginBottom: '1.5rem'
+      }}>
         <CategoryFilter
           selectedCategory={currentCategory}
           onSelectCategory={handleCategoryChange}
         />
+
+        {/* Quick Sort Action Pills */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            Quick Sort:
+          </span>
+          <button
+            onClick={() => handleSortChange('price-asc')}
+            className={`btn btn-sm ${currentSort === 'price-asc' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+          >
+            Price: Low &rarr; High
+          </button>
+          <button
+            onClick={() => handleSortChange('price-desc')}
+            className={`btn btn-sm ${currentSort === 'price-desc' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+          >
+            Price: High &rarr; Low
+          </button>
+          <button
+            onClick={() => handleSortChange('inventory')}
+            className={`btn btn-sm ${currentSort === 'inventory' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+          >
+            🔥 Selling Fast
+          </button>
+        </div>
       </div>
 
       {/* Active Filter Indicators */}

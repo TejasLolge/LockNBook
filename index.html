@@ -134,11 +134,20 @@
       </div>
     </div>
 
-    <!-- Section Title -->
-    <div class="section-header">
+    <!-- Section Title & Sort Buttons -->
+    <div class="section-header" style="flex-wrap: wrap; gap: 1rem;">
       <div>
         <h2 class="section-title">Trending Live Events</h2>
         <p style="font-size: 0.88rem; color: var(--text-secondary);">Real-time inventory synchronized across all concurrent sessions.</p>
+      </div>
+
+      <!-- Interactive Sort Buttons -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">SORT:</span>
+        <button class="btn btn-primary btn-sm sort-btn active" data-sort="default">📅 Date</button>
+        <button class="btn btn-secondary btn-sm sort-btn" data-sort="price-asc">💵 Price: Low &rarr; High</button>
+        <button class="btn btn-secondary btn-sm sort-btn" data-sort="price-desc">💎 Price: High &rarr; Low</button>
+        <button class="btn btn-secondary btn-sm sort-btn" data-sort="inventory">🔥 Selling Fast</button>
       </div>
     </div>
 

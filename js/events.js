@@ -8,6 +8,7 @@
 
   let currentCategory = 'all';
   let searchQuery = '';
+  let currentSort = 'default';
   let selectedEvent = null;
   let selectedTierId = null;
   let selectedQuantity = 1;
@@ -15,6 +16,7 @@
   function initEvents() {
     renderEvents();
     setupCategoryFilters();
+    setupSortButtons();
     setupSearchInput();
     setupEventModal();
 
@@ -46,6 +48,22 @@
     });
   }
 
+  function setupSortButtons() {
+    const sortBtns = document.querySelectorAll('.sort-btn');
+    sortBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sortBtns.forEach(b => {
+          b.classList.remove('active', 'btn-primary');
+          b.classList.add('btn-secondary');
+        });
+        btn.classList.add('active', 'btn-primary');
+        btn.classList.remove('btn-secondary');
+        currentSort = btn.getAttribute('data-sort') || 'default';
+        renderEvents();
+      });
+    });
+  }
+
   function setupSearchInput() {
     const searchInput = document.getElementById('eventSearchInput');
     if (searchInput) {
@@ -54,6 +72,20 @@
         renderEvents();
       });
     }
+  }
+
+  function getMinPrice(event) {
+    let min = Infinity;
+    event.tiers.forEach(t => { if (t.price < min) min = t.price; });
+    return min === Infinity ? 0 : min;
+  }
+
+  function getAvailableSeats(event) {
+    let sum = 0;
+    event.tiers.forEach(t => {
+      sum += Math.max(0, t.total - (t.confirmed + t.held));
+    });
+    return sum;
   }
 
   function getFilteredEvents() {
@@ -69,6 +101,15 @@
         e.artist.toLowerCase().includes(searchQuery) ||
         e.venue.toLowerCase().includes(searchQuery)
       );
+    }
+
+    // Apply sorting
+    if (currentSort === 'price-asc') {
+      events.sort((a, b) => getMinPrice(a) - getMinPrice(b));
+    } else if (currentSort === 'price-desc') {
+      events.sort((a, b) => getMinPrice(b) - getMinPrice(a));
+    } else if (currentSort === 'inventory') {
+      events.sort((a, b) => getAvailableSeats(a) - getAvailableSeats(b));
     }
 
     return events;
