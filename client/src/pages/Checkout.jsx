@@ -421,8 +421,15 @@ export default function Checkout() {
               Hold Reference: {activeHold.holdId}
             </div>
             {activeHold.selectedSeats && activeHold.selectedSeats.length > 0 && (
-              <div style={{ fontWeight: 700, color: 'var(--primary)', marginBottom: '0.25rem', fontFamily: 'monospace' }}>
-                Assigned Seats: {activeHold.selectedSeats.join(', ')}
+              <div style={{ marginBottom: '0.5rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.15rem' }}>
+                  Locked Berths / Seats:
+                </div>
+                {activeHold.selectedSeats.map((s, idx) => (
+                  <div key={idx} style={{ fontWeight: 700, color: 'var(--primary)', fontFamily: 'monospace', fontSize: '0.8125rem' }}>
+                    &bull; {typeof s === 'object' && s?.display_label ? s.display_label : String(s)}
+                  </div>
+                ))}
               </div>
             )}
             <div>Venue: {activeHold.venue}</div>

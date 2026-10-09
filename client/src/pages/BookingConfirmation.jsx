@@ -180,12 +180,16 @@ export default function BookingConfirmation() {
               </div>
 
               {booking.selectedSeats && booking.selectedSeats.length > 0 && (
-                <div>
+                <div style={{ gridColumn: 'span 2' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                    Assigned Seats
+                    Confirmed Berths / Assigned Seats
                   </span>
-                  <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--primary)', marginTop: '0.25rem', fontFamily: 'monospace' }}>
-                    {booking.selectedSeats.join(', ')}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.35rem' }}>
+                    {booking.selectedSeats.map((s, idx) => (
+                      <div key={idx} style={{ fontWeight: 800, fontSize: '0.9375rem', color: 'var(--primary)', fontFamily: 'monospace' }}>
+                        &bull; {typeof s === 'object' && s?.display_label ? s.display_label : String(s)}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

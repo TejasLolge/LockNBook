@@ -40,11 +40,28 @@ export default function OrderSummary({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.875rem' }}>
         {selectedSeats && selectedSeats.length > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-            <span>Assigned Seats</span>
-            <span style={{ fontWeight: 700, color: 'var(--primary)', fontFamily: 'monospace' }}>
-              {selectedSeats.join(', ')}
-            </span>
+          <div style={{
+            padding: '0.625rem 0.75rem',
+            backgroundColor: 'var(--bg-muted)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-light)',
+            marginBottom: '0.25rem'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+              Blocked / Assigned Seats:
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {selectedSeats.map((s, idx) => (
+                <div key={idx} style={{
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  color: 'var(--primary)',
+                  fontFamily: 'monospace'
+                }}>
+                  &bull; {typeof s === 'object' && s?.display_label ? s.display_label : String(s)}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

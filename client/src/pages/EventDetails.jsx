@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Calendar, MapPin, ShieldCheck, ArrowLeft, Lock, AlertCircle, Loader2, Heart } from 'lucide-react';
 import { fetchEventById } from '../api/events';
 import { createHold } from '../api/holds';
+import { formatSeatDisplay } from '../api/railwaySeatEngine';
 import { useAuth } from '../context/AuthContext';
 import { useHold } from '../context/HoldContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -85,10 +86,14 @@ export default function EventDetails() {
       setReserving(true);
       setReserveError(null);
 
+      const defaultSeats = (event.category === 'trains' || event.coachType === 'SL')
+        ? Array.from({ length: quantity }, (_, i) => i + 1)
+        : Array.from({ length: quantity }, (_, i) => `A${i + 1}`);
+
       const res = await createHold({
         eventId: event.id,
         quantity: selectedSeats.length > 0 ? selectedSeats.length : quantity,
-        selectedSeats: selectedSeats.length > 0 ? selectedSeats : [`A${quantity}`]
+        selectedSeats: selectedSeats.length > 0 ? selectedSeats : defaultSeats
       });
 
       // 3. Store valid hold in context & navigate to checkout
@@ -334,7 +339,7 @@ export default function EventDetails() {
             `}</style>
 
             <div style={{ textAlign: 'center', marginTop: '0.875rem', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-              Reserves an exclusive 5-minute hold upon clicking. No charge until confirmation.
+              Reserves an exclusive 2.5-minute concurrency hold upon clicking. No charge until confirmation.
             </div>
           </div>
 
@@ -343,7 +348,7 @@ export default function EventDetails() {
             eventTitle={event.title}
             quantity={selectedSeats.length > 0 ? selectedSeats.length : quantity}
             unitPrice={event.price}
-            selectedSeats={selectedSeats}
+            selectedSeats={selectedSeats.map(s => formatSeatDisplay(s, event.coach || 'S3'))}
           />
         </div>
       </div>

@@ -92,48 +92,52 @@ export const MOCK_EVENTS = [
     tags: ['movies', 'anime', 'premiere', 'new-york']
   },
 
-  // 3. TRAINS & RAIL TRANSIT
+  // 3. TRAINS & RAIL TRANSIT (Indian Railways Sleeper SL Coach - 72 Berths, 9 Bays)
   {
     id: 'ev-301',
-    title: 'Apex Bullet Rail: Coastliner Express (SF → LA)',
-    artist: 'High-Speed Magnetic Levitation Service',
+    title: 'Panchavati Express: Nashik – Mumbai (Coach S3)',
+    artist: 'Indian Railways • Central Railway Sleeper (SL)',
     category: 'trains',
-    city: 'San Francisco',
+    coachType: 'SL',
+    coach: 'S3',
+    city: 'Nashik',
     date: '2026-11-20',
-    time: '6:30 AM PST',
-    venue: 'Transbay Transit Center, San Francisco',
-    price: 78,
-    currency: 'USD',
+    time: '6:30 AM IST',
+    venue: 'Nashik Road Railway Station (NK)',
+    price: 185,
+    currency: 'INR',
     image: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=800&q=80',
-    description: 'Ultra high-speed express bullet train connection arriving in downtown Los Angeles in under 2 hours 15 minutes. Includes ergonomic reclining seats and onboard fiber Wi-Fi.',
+    description: 'Indian Railways Sleeper (SL) Class Coach S3 with 72 berths arranged in 9 bays of 8 berths each. Features Lower (LB), Middle (MB), Upper (UB), Side Lower (SL), and Side Upper (SU) berths with atomic concurrency holds.',
     featured: true,
-    availableInventory: 26,
-    totalCapacity: 40,
-    seatRows: ['A', 'B', 'C', 'D', 'E'],
-    seatsPerRow: 8,
-    occupiedSeats: ['A1', 'A2', 'A7', 'A8', 'B1', 'B8', 'C1', 'C8', 'D1', 'D8', 'E1', 'E2', 'E7', 'E8'],
-    tags: ['trains', 'transit', 'high-speed', 'commute']
+    availableInventory: 61,
+    totalCapacity: 72,
+    totalBerths: 72,
+    bays: 9,
+    occupiedSeats: [2, 5, 8, 12, 18, 23, 31, 45, 59, 64, 71],
+    tags: ['trains', 'transit', 'sleeper', 'nashik', 'mumbai', 'pvgcoe']
   },
   {
     id: 'ev-302',
-    title: 'Silver Glacier Scenic Vista Panorama Rail',
-    artist: 'Rocky Mountain Observation Coach',
+    title: 'Deccan Superfast Express: Pune – Nashik (Coach S2)',
+    artist: 'Indian Railways • Sleeper Class (SL)',
     category: 'trains',
-    city: 'Denver',
+    coachType: 'SL',
+    coach: 'S2',
+    city: 'Pune',
     date: '2026-12-05',
-    time: '8:00 AM MST',
-    venue: 'Union Station, Denver',
-    price: 110,
-    currency: 'USD',
+    time: '8:00 AM IST',
+    venue: 'Pune Junction (PUNE)',
+    price: 210,
+    currency: 'INR',
     image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80',
-    description: 'Glass-domed scenic panorama rail winding through snow-capped Continental Divide passes with gourmet mountain breakfast service and observation lounge.',
+    description: 'Indian Railways Sleeper (SL) Class Coach S2 featuring 72 berths across 9 bays connecting Pune and Nashik with instant seat-locking reservations.',
     featured: false,
-    availableInventory: 15,
-    totalCapacity: 40,
-    seatRows: ['A', 'B', 'C', 'D', 'E'],
-    seatsPerRow: 8,
-    occupiedSeats: ['A3', 'A4', 'A5', 'A6', 'B3', 'B4', 'B5', 'B6', 'C3', 'C4', 'C5', 'C6', 'D3', 'D4'],
-    tags: ['trains', 'scenic', 'luxury', 'mountains']
+    availableInventory: 62,
+    totalCapacity: 72,
+    totalBerths: 72,
+    bays: 9,
+    occupiedSeats: [1, 3, 7, 14, 20, 28, 36, 42, 50, 62],
+    tags: ['trains', 'scenic', 'sleeper', 'pune', 'nashik']
   },
 
   // 4. BUSES & LUXURY COACHES
@@ -293,7 +297,7 @@ export const MOCK_EVENTS = [
 // Persistent state in memory/localStorage for mock mode
 export const mockStore = {
   getEvents() {
-    const stored = localStorage.getItem('lnb_mock_events_v2');
+    const stored = localStorage.getItem('lnb_mock_events_v3');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -302,11 +306,11 @@ export const mockStore = {
         }
       } catch (e) { /* fallback */ }
     }
-    localStorage.setItem('lnb_mock_events_v2', JSON.stringify(MOCK_EVENTS));
+    localStorage.setItem('lnb_mock_events_v3', JSON.stringify(MOCK_EVENTS));
     return MOCK_EVENTS;
   },
   saveEvents(events) {
-    localStorage.setItem('lnb_mock_events_v2', JSON.stringify(events));
+    localStorage.setItem('lnb_mock_events_v3', JSON.stringify(events));
   },
   getHolds() {
     try {
