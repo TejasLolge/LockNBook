@@ -1,0 +1,290 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Calendar, MapPin, ShieldCheck, ArrowLeft, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { fetchEventById } from '../api/events';
+import { createHold } from '../api/holds';
+import { useAuth } from '../context/AuthContext';
+import { useHold } from '../context/HoldContext';
+import QuantitySelector from '../components/QuantitySelector';
+import OrderSummary from '../components/OrderSummary';
+import LoadingState from '../components/LoadingState';
+import ErrorMessage from '../components/ErrorMessage';
+
+export default function EventDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { setHold } = useHold();
+
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [reserving, setReserving] = useState(false);
+  const [reserveError, setReserveError] = useState(null);
+
+  const loadEvent = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetchEventById(id);
+      setEvent(res.event);
+    } catch (err) {
+      setError(err.message || 'Unable to load event details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadEvent();
+  }, [id]);
+
+  const handleReserve = async () => {
+    if (!event) return;
+
+    // 1. Check authentication
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${encodeURIComponent(`/events/${event.id}`)}`);
+      return;
+    }
+
+    // 2. Submit hold request to authoritative backend
+    try {
+      setReserving(true);
+      setReserveError(null);
+
+      const res = await createHold({
+        eventId: event.id,
+        quantity
+      });
+
+      // 3. Store valid hold in context & navigate to checkout
+      setHold(res.hold);
+      navigate('/checkout');
+    } catch (err) {
+      setReserveError(err.message || 'Hold request rejected by reservation engine.');
+    } finally {
+      setReserving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container" style={{ paddingTop: '3rem' }}>
+        <LoadingState message="Fetching event information..." />
+      </div>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <div className="container" style={{ paddingTop: '3rem' }}>
+        <Link to="/events" className="btn btn-secondary btn-sm" style={{ marginBottom: '1.5rem', gap: '0.375rem' }}>
+          <ArrowLeft size={14} />
+          <span>Back to All Events</span>
+        </Link>
+        <ErrorMessage message={error || 'Event could not be found'} onRetry={loadEvent} />
+      </div>
+    );
+  }
+
+  const isAvailable = event.availableInventory === undefined || event.availableInventory > 0;
+  const maxAllowed = event.availableInventory !== undefined ? Math.min(4, event.availableInventory) : 4;
+
+  return (
+    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+      {/* Breadcrumb / Back button */}
+      <Link to="/events" className="btn btn-secondary btn-sm" style={{ marginBottom: '1.5rem', gap: '0.375rem' }}>
+        <ArrowLeft size={14} />
+        <span>Back to Events</span>
+      </Link>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '2.5rem',
+        alignItems: 'start'
+      }}>
+        {/* Left Column: Event Media & Information */}
+        <div>
+          <div style={{
+            borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
+            backgroundColor: 'var(--bg-muted)',
+            maxHeight: '360px',
+            marginBottom: '1.5rem',
+            border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-card)'
+          }}>
+            <img
+              src={event.image}
+              alt={event.title}
+              style={{ width: '100%', height: '360px', objectFit: 'cover' }}
+            />
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            color: 'var(--primary)',
+            fontSize: '0.9375rem',
+            fontWeight: 700,
+            marginBottom: '0.5rem'
+          }}>
+            <Calendar size={18} />
+            <span>{event.date} &bull; {event.time}</span>
+          </div>
+
+          <h1 style={{
+            fontSize: '2.25rem',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: 'var(--text-main)',
+            marginBottom: '0.5rem',
+            lineHeight: 1.2
+          }}>
+            {event.title}
+          </h1>
+
+          {event.artist && (
+            <div style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              Headliner: {event.artist}
+            </div>
+          )}
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            color: 'var(--text-secondary)',
+            fontSize: '0.9375rem',
+            marginBottom: '1.5rem',
+            paddingBottom: '1.5rem',
+            borderBottom: '1px solid var(--border-light)'
+          }}>
+            <MapPin size={18} style={{ flexShrink: 0 }} />
+            <span>{event.venue}</span>
+          </div>
+
+          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-main)' }}>
+            About This Experience
+          </h3>
+          <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '2rem' }}>
+            {event.description}
+          </p>
+
+          <div style={{
+            padding: '1rem 1.25rem',
+            backgroundColor: 'var(--bg-muted)',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem'
+          }}>
+            <ShieldCheck size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
+            <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+              <strong>Fair-Queue Guarantee:</strong> Reserving locks your seats directly on Redis/PostgreSQL. No other user can claim your tickets while your countdown is active.
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Ticket Reservation Panel */}
+        <div style={{ position: 'sticky', top: '90px' }}>
+          <div className="card" style={{ padding: '1.75rem', backgroundColor: 'var(--bg-white)', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  General Admission
+                </span>
+                <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                  ${event.price} <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ ticket</span>
+                </div>
+              </div>
+
+              {event.availableInventory !== undefined && (
+                <span className={`badge ${event.availableInventory > 0 ? 'badge-success' : 'badge-danger'}`}>
+                  {event.availableInventory > 0 ? `${event.availableInventory} Remaining` : 'Sold Out'}
+                </span>
+              )}
+            </div>
+
+            {/* Quantity Selector */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label className="form-label">Select Ticket Quantity</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <QuantitySelector
+                  quantity={quantity}
+                  onChange={setQuantity}
+                  min={1}
+                  max={maxAllowed}
+                  disabled={!isAvailable || reserving}
+                />
+                <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+                  Max {maxAllowed} per fan
+                </span>
+              </div>
+            </div>
+
+            {/* Error Message if Hold Fails */}
+            {reserveError && (
+              <div style={{
+                padding: '0.75rem',
+                backgroundColor: 'var(--danger-bg)',
+                border: '1px solid var(--danger-border)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--danger)',
+                fontSize: '0.8125rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1rem'
+              }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{reserveError}</span>
+              </div>
+            )}
+
+            {/* Reserve Action Button */}
+            <button
+              onClick={handleReserve}
+              disabled={!isAvailable || reserving || maxAllowed === 0}
+              className="btn btn-primary btn-lg"
+              style={{ width: '100%', gap: '0.5rem' }}
+            >
+              {reserving ? (
+                <>
+                  <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Locking Tickets on Server...</span>
+                </>
+              ) : isAvailable ? (
+                <>
+                  <Lock size={18} />
+                  <span>Reserve Tickets ({quantity}) &rarr;</span>
+                </>
+              ) : (
+                <span>Sold Out</span>
+              )}
+            </button>
+            <style>{`
+              @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            `}</style>
+
+            <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Server initiates an exclusive 5-minute hold upon clicking.
+            </div>
+          </div>
+
+          {/* Real-time Order Summary Preview */}
+          <OrderSummary
+            eventTitle={event.title}
+            quantity={quantity}
+            unitPrice={event.price}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LockNBook | Atomic Ticket Reservations & Zero Overselling</title>
+  <meta name="description" content="Next-generation event ticket booking with guaranteed atomic locks, TTL checkout countdown, and verified concurrency safety.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/ticket.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <!-- Brand Logo -->
+      <a href="#" class="brand-logo" onclick="window.location.reload(); return false;">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        </div>
+        <span>Lock<span class="text-gradient">N</span>Book</span>
+      </a>
+
+      <!-- Global Search -->
+      <div class="search-box-wrapper">
+        <svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="eventSearchInput" class="search-input" placeholder="Search concerts, festivals, artists, cities...">
+      </div>
+
+      <!-- Action Navigation -->
+      <div class="nav-actions">
+        <button id="myBookingsBtn" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 10V6a2 2 0 0 0-2-2H4c-1.1 0-1.99.9-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2-1.5c-1.25.78-2 2.17-2 3.5s.75 2.72 2 3.5V18H4v-2.5c1.25-.78 2-2.17 2-3.5s-.75-2.72-2-3.5V6h16v2.5z"/></svg>
+          <span>My Passes</span>
+          <span id="myBookingsBadge" class="badge-count" style="display: none;">0</span>
+        </button>
+
+        <button id="devHudToggleBtn" class="btn btn-cyber btn-sm" title="Open Concurrency & Load Testing Tools">
+          ⚡ Concurrency HUD
+        </button>
+
+        <button id="authNavBtn" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span>Sign In</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Real-time Architecture Guarantee Ticker -->
+  <aside class="system-guarantee-bar">
+    <div class="container ticker-content">
+      <div class="ticker-item">
+        <span class="status-dot pulse"></span>
+        <span>Distributed Redis Lock Engine: <strong>ACTIVE</strong></span>
+      </div>
+      <div class="ticker-item">
+        <span>🛡️ Strict Anti-Overselling: <strong>Zero Overbooked Seats</strong></span>
+      </div>
+      <div class="ticker-item">
+        <span>⏱️ Atomic Reservation Holds: <strong>300s TTL Expiry Window</strong></span>
+      </div>
+      <div class="ticker-item">
+        <span>🔑 Concurrency Protection: <strong>Idempotent Transacting</strong></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Hero Banner -->
+  <section class="hero-section">
+    <div class="container hero-layout">
+      <div>
+        <div class="hero-pill-tag">
+          <span>🔒 Lock-Protected Ticketing</span>
+          <span>•</span>
+          <span>Zero Overselling Guarantee</span>
+        </div>
+        <h1 class="hero-title">
+          Atomic Reservations.<br>
+          <span class="text-gradient">Zero Overselling.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Never lose your seats to checkout lag or concurrent bots. LockNBook holds your inventory with atomic guarantees, gives you a dedicated 5-minute checkout countdown, and automatically frees expired holds.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#eventsCatalogSection" class="btn btn-primary btn-lg">
+            Explore Live Events →
+          </a>
+          <button onclick="document.getElementById('devHudToggleBtn').click()" class="btn btn-secondary btn-lg">
+            Simulate 50 Competing Bots ⚡
+          </button>
+        </div>
+      </div>
+
+      <!-- Spotlight Feature Card -->
+      <div class="hero-spotlight-card">
+        <span class="spotlight-badge">Headliner Tonight</span>
+        <div class="spotlight-media" style="background-image: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=800&q=80');">
+        </div>
+        <div class="spotlight-content">
+          <div style="font-size: 0.8rem; color: #38bdf8; font-weight: 700; margin-bottom: 0.25rem;">CYBERSPHERE ARENA • SEATTLE</div>
+          <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem;">Neon Horizon: Electronic World Tour</h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Aura Collective & Tycho Beats live holographic audio experience. Selling fast!
+          </p>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Starting at</span>
+              <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff;">$65</div>
+            </div>
+            <button class="btn btn-primary" onclick="window.EventsController.openEventModal('ev-001')">
+              Lock & Hold Seats 🔒
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content & Catalog -->
+  <main class="container" id="eventsCatalogSection">
+    <!-- Category Filter Tabs -->
+    <div class="category-filter-section">
+      <div class="category-tabs">
+        <button class="cat-pill active" data-cat="all">All Experiences</button>
+        <button class="cat-pill" data-cat="music">🎵 Live Music</button>
+        <button class="cat-pill" data-cat="tech">💻 Tech & AI Summits</button>
+        <button class="cat-pill" data-cat="sports">🏎️ Motorsport & Sports</button>
+        <button class="cat-pill" data-cat="comedy">🎙️ Standup Comedy</button>
+        <button class="cat-pill" data-cat="theatre">🎭 Symphony & Theatre</button>
+      </div>
+    </div>
+
+    <!-- Section Title -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Trending Live Events</h2>
+        <p style="font-size: 0.88rem; color: var(--text-secondary);">Real-time inventory synchronized across all concurrent sessions.</p>
+      </div>
+    </div>
+
+    <!-- Dynamic Events Grid -->
+    <div id="eventsGrid" class="events-grid">
+      <!-- Populated via events.js -->
+    </div>
+  </main>
+
+  <!-- Sticky Active Lock Notification Bar -->
+  <div id="activeLockBar" class="active-lock-bar">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div class="lock-timer-display">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+        <span id="lockTimerText">05:00</span>
+      </div>
+      <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.2;">
+        <strong>Seats Held Exclusively For You:</strong><br>
+        <span id="lockQtyText" style="color: #38bdf8;">2x General Admission</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <button id="viewLockBtn" class="btn btn-primary btn-sm">Complete Checkout →</button>
+      <button id="cancelActiveLockBtn" class="btn btn-secondary btn-sm" title="Release held seats">Release</button>
+    </div>
+  </div>
+
+  <!-- Event Details & Tier Selection Modal -->
+  <div id="eventDetailsModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalEventTitle" class="modal-title">Event Title</h3>
+        <button id="closeEventModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem; max-height: 200px;">
+          <img id="modalEventBanner" src="" style="width: 100%; height: 200px; object-fit: cover;" alt="Banner">
+        </div>
+        <div id="modalEventArtist" style="font-size: 1.1rem; font-weight: 700; color: #a5b4fc; margin-bottom: 0.25rem;"></div>
+        <div id="modalEventMeta" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;"></div>
+        <p id="modalEventDesc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;"></p>
+
+        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">Select Ticket Tier:</h4>
+        <div id="modalTiersList" class="tier-selection-list">
+          <!-- Populated by events.js -->
+        </div>
+
+        <!-- Quantity Picker -->
+        <div class="qty-stepper-wrapper">
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 0.95rem;">Number of Tickets</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Maximum 4 tickets per fan to prevent hoarding</div>
+          </div>
+          <button id="qtyDecBtn" class="stepper-btn" onclick="window.EventsController.changeQuantity(-1)">−</button>
+          <span id="ticketQtyDisplay" class="stepper-value">1</span>
+          <button id="qtyIncBtn" class="stepper-btn" onclick="window.EventsController.changeQuantity(1)">+</button>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="glass-panel" style="padding: 1rem; margin-top: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+            <span>Subtotal:</span>
+            <span id="orderSubtotal">$0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-secondary);">
+            <span>Processing & Gate Fee:</span>
+            <span id="orderFee">$0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 800; border-top: 1px solid var(--border-subtle); padding-top: 0.5rem;">
+            <span>Estimated Total:</span>
+            <span id="orderTotal" class="text-gradient">$0.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="initiateLockBtn" class="btn btn-primary btn-lg" style="width: 100%;">
+          🔒 Lock & Hold Tickets (5-Min Countdown)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout & Payment Modal -->
+  <div id="checkoutModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Secure Atomic Checkout</h3>
+          <div style="font-size: 0.78rem; color: #38bdf8; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.2rem;">
+            <span>⏱️ Lock active:</span>
+            <strong id="checkoutModalTimerText" style="font-family: monospace;">05:00</strong>
+            <span>• Inventory is reserved exclusively for you</span>
+          </div>
+        </div>
+        <button id="closeCheckoutModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Concurrency Safe Tag -->
+        <div style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: var(--radius-sm); padding: 0.65rem 0.85rem; margin-bottom: 1.25rem; font-size: 0.78rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #38bdf8; font-weight: 600;">🛡️ Idempotent Anti-Collision Channel Active</span>
+            <span id="idempotencyKeyDisplay" style="font-family: monospace; color: var(--text-muted); font-size: 0.72rem;"></span>
+          </div>
+        </div>
+
+        <!-- Reservation Brief -->
+        <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem;">
+          <h4 id="checkoutEventTitle" style="font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem;"></h4>
+          <div id="checkoutTierDetail" style="font-size: 0.85rem; color: #a5b4fc; margin-bottom: 0.5rem;"></div>
+          <div style="display: flex; justify-content: space-between; font-weight: 700;">
+            <span>Total Payable:</span>
+            <span id="checkoutTotalPrice" style="color: #34d399; font-size: 1.1rem;">$0.00</span>
+          </div>
+        </div>
+
+        <form id="checkoutPaymentForm">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="checkoutCustomerName" class="form-input" required placeholder="e.g. Alex Morgan" value="Alex Morgan">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address (For Digital Pass & QR Delivery)</label>
+            <input type="email" id="checkoutCustomerEmail" class="form-input" required placeholder="alex@locknbook.dev" value="alex@locknbook.dev">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile Phone (SMS Entry Pass)</label>
+            <input type="tel" id="checkoutCustomerPhone" class="form-input" placeholder="+1 (555) 019-2834" value="+1 (555) 019-2834">
+          </div>
+
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin: 1.25rem 0 0.75rem;">Select Payment Method:</h4>
+          <div class="payment-methods-grid">
+            <div class="payment-method-card active" data-method="card">
+              💳 Credit / Debit
+            </div>
+            <div class="payment-method-card" data-method="upi">
+              ⚡ Instant Pay / UPI
+            </div>
+            <div class="payment-method-card" data-method="apple">
+               Pay / Google
+            </div>
+          </div>
+
+          <div id="creditCardInputFields">
+            <div class="form-group">
+              <label class="form-label">Card Number</label>
+              <input type="text" class="form-input" placeholder="4532 •••• •••• 8920" value="4532 9012 3456 8920">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Expiry Date</label>
+                <input type="text" class="form-input" placeholder="MM/YY" value="08/28">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV</label>
+                <input type="password" maxlength="4" class="form-input" placeholder="•••" value="842">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="submitPaymentBtn" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;">
+            Authorize Payment & Confirm Reservation 🔒
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lock Expired Alert Modal -->
+  <div id="lockExpiredModal" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 480px; text-align: center;">
+      <div class="modal-body" style="padding: 2.5rem 2rem;">
+        <div style="font-size: 3.5rem; margin-bottom: 1rem;">⏱️</div>
+        <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.75rem;">Lock Expired</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
+          Your 5-minute checkout reservation window elapsed. To prevent hoarding and give all fans equal access, your held seats were safely returned to the inventory pool.
+        </p>
+        <button class="btn btn-primary btn-lg" onclick="document.getElementById('lockExpiredModal').classList.remove('open')">
+          Browse Available Events
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Bookings Modal -->
+  <div id="myBookingsModal" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title">My Admission Passes</h3>
+        <button id="closeMyBookingsBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="bookingsListContainer">
+          <!-- Populated by bookings.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket Pass / QR Modal -->
+  <div id="ticketPassModal" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 640px; background: transparent; border: none; box-shadow: none;">
+      <div style="text-align: right; margin-bottom: 0.5rem;">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('ticketPassModal').classList.remove('open')">
+          Close [Esc] &times;
+        </button>
+      </div>
+      <div id="ticketPassContent">
+        <!-- Populated by bookings.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal-dialog" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Account Access</h3>
+        <button id="closeAuthModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="authForm">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="authNameInput" class="form-input" required placeholder="Alex Morgan" value="Alex Morgan">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="authEmailInput" class="form-input" required placeholder="alex@locknbook.dev" value="alex@locknbook.dev">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 0.75rem;">
+            Sign In with Email
+          </button>
+          <button type="button" id="demoLoginBtn" class="btn btn-secondary" style="width: 100%;">
+            ⚡ Quick Demo Sign In
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Developer HUD / Concurrency & Load Testing Drawer (Sarthak & Tanishq Track) -->
+  <aside id="devHudPanel" class="dev-hud-panel">
+    <div class="dev-hud-header">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="color: #38bdf8; font-size: 1.2rem;">⚡</span>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: #ffffff;">Concurrency & Locks HUD</h4>
+          <div style="font-size: 0.7rem; color: var(--text-secondary);">Sarthak Load Test & Backend Verification</div>
+        </div>
+      </div>
+      <button id="closeDevHudBtn" class="modal-close-btn">&times;</button>
+    </div>
+    <div class="dev-hud-body">
+      <!-- Benchmark Action Card -->
+      <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.25rem;">
+        <h5 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #38bdf8;">High-Concurrency Stress Test</h5>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.85rem; line-height: 1.4;">
+          Spawns 50 competing automated bots requesting seats simultaneously to test atomic hold isolation and prove zero overselling.
+        </p>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="runConcurrencySimulationBtn" class="btn btn-cyber btn-sm" style="flex: 1;">
+            🚀 Fire 50 Competing Bots
+          </button>
+          <button id="resetSystemDataBtn" class="btn btn-secondary btn-sm" title="Reset all inventory data">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-time Lock State Table -->
+      <h5 style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+        Active Memory Locks (Redis Representation)
+      </h5>
+      <div style="background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); overflow-x: auto; margin-bottom: 1.25rem;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border-subtle); font-size: 0.7rem; color: var(--text-muted);">
+              <th style="padding: 0.4rem 0.2rem;">LOCK ID</th>
+              <th style="padding: 0.4rem 0.2rem;">ITEM</th>
+              <th style="padding: 0.4rem 0.2rem;">STATUS</th>
+              <th style="padding: 0.4rem 0.2rem;">TTL</th>
+            </tr>
+          </thead>
+          <tbody id="devLocksTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Live Terminal Log -->
+      <h5 style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+        Engine Transaction Stream
+      </h5>
+      <div id="devConsoleOutput" class="console-log-box">
+        <div class="log-entry info">[Engine Initialized] Redis lock provider active. TTL=300s.</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Core JavaScript Modules -->
+  <script src="js/api.js"></script>
+  <script src="js/lockEngine.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/bookings.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
