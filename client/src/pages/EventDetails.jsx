@@ -127,7 +127,7 @@ export default function EventDetails() {
   }
 
   const isAvailable = event.availableInventory === undefined || event.availableInventory > 0;
-  const maxAllowed = event.availableInventory !== undefined ? Math.min(4, event.availableInventory) : 4;
+  const maxAllowed = event.availableInventory !== undefined ? Math.min(6, event.availableInventory) : 6;
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
@@ -283,6 +283,39 @@ export default function EventDetails() {
                   ) : 'Sold Out'}
                 </span>
               )}
+            </div>
+
+            {/* Ticket / Berth Quantity Selector */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '1.25rem',
+              padding: '0.85rem 1rem',
+              backgroundColor: 'var(--bg-muted)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border-light)'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  Number of Passes / Berths
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Increased Limit: Up to {maxAllowed} berths per booking
+                </div>
+              </div>
+              <QuantitySelector
+                quantity={selectedSeats.length > 0 ? selectedSeats.length : quantity}
+                onChange={(q) => {
+                  setQuantity(q);
+                  if (selectedSeats.length > q) {
+                    setSelectedSeats(selectedSeats.slice(0, q));
+                  }
+                }}
+                min={1}
+                max={maxAllowed}
+                disabled={!isAvailable || reserving}
+              />
             </div>
 
             {/* Interactive Numbered Seat Selection Map */}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Minus, Plus } from 'lucide-react';
 
-export default function QuantitySelector({ quantity, onChange, min = 1, max = 4, disabled = false }) {
+export default function QuantitySelector({ quantity, onChange, min = 1, max = 6, disabled = false }) {
   const handleDecrement = () => {
     if (quantity > min) onChange(quantity - 1);
   };
