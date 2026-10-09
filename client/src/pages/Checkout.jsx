@@ -405,6 +405,7 @@ export default function Checkout() {
             eventTitle={activeHold.eventTitle}
             quantity={activeHold.quantity}
             unitPrice={activeHold.unitPrice}
+            selectedSeats={activeHold.selectedSeats || []}
           />
 
           <div style={{
@@ -419,6 +420,11 @@ export default function Checkout() {
             <div style={{ fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.25rem' }}>
               Hold Reference: {activeHold.holdId}
             </div>
+            {activeHold.selectedSeats && activeHold.selectedSeats.length > 0 && (
+              <div style={{ fontWeight: 700, color: 'var(--primary)', marginBottom: '0.25rem', fontFamily: 'monospace' }}>
+                Assigned Seats: {activeHold.selectedSeats.join(', ')}
+              </div>
+            )}
             <div>Venue: {activeHold.venue}</div>
             <div>Event Date: {activeHold.date} &bull; {activeHold.time}</div>
           </div>

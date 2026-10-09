@@ -1,9 +1,9 @@
 import { apiClient } from './client';
 import { mockStore } from './mockData';
 
-export async function createHold({ eventId, quantity }) {
+export async function createHold({ eventId, quantity, selectedSeats = [] }) {
   try {
-    const res = await apiClient.post('/holds', { eventId, quantity });
+    const res = await apiClient.post('/holds', { eventId, quantity, selectedSeats });
     return {
       hold: res.data || res.hold || res,
       isMock: false
@@ -23,8 +23,11 @@ export async function createHold({ eventId, quantity }) {
       throw error;
     }
 
-    // Decrement inventory in mock store
+    // Decrement inventory and record occupied seats in mock store
     event.availableInventory -= quantity;
+    if (selectedSeats && selectedSeats.length > 0) {
+      event.occupiedSeats = Array.from(new Set([...(event.occupiedSeats || []), ...selectedSeats]));
+    }
     mockStore.saveEvents(events);
 
     const holdId = 'hld_' + Math.random().toString(36).substring(2, 9);
@@ -39,6 +42,7 @@ export async function createHold({ eventId, quantity }) {
       date: event.date,
       time: event.time,
       quantity,
+      selectedSeats: selectedSeats.length > 0 ? selectedSeats : Array.from({ length: quantity }, (_, i) => `A${i + 1}`),
       unitPrice: event.price,
       totalAmount: event.price * quantity,
       expiresAt,

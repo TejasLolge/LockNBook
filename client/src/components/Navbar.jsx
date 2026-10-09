@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home } from 'lucide-react';
+import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useHold } from '../context/HoldContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { activeHold } = useHold();
+  const { savedCount } = useWishlist();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -91,7 +93,7 @@ export default function Navbar() {
         <nav style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '1.75rem',
+          gap: '1.5rem',
           fontWeight: 600,
           fontSize: '0.9375rem'
         }} className="desktop-nav">
@@ -112,7 +114,47 @@ export default function Navbar() {
               transition: 'color 0.15s ease'
             })}
           >
-            Explore Events
+            Explore All
+          </NavLink>
+
+          <NavLink
+            to="/events?tab=recommendations"
+            style={({ isActive }) => ({
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+              transition: 'color 0.15s ease'
+            })}
+          >
+            <Sparkles size={15} color="var(--primary)" />
+            <span>Smart Discovery</span>
+          </NavLink>
+
+          <NavLink
+            to="/events?tab=saved"
+            style={({ isActive }) => ({
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.375rem',
+              color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+              transition: 'color 0.15s ease'
+            })}
+          >
+            <Heart size={15} color={savedCount > 0 ? '#EF4444' : 'currentColor'} fill={savedCount > 0 ? '#EF4444' : 'transparent'} />
+            <span>Wishlist</span>
+            {savedCount > 0 && (
+              <span style={{
+                backgroundColor: 'var(--primary)',
+                color: '#FFFFFF',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                padding: '0.1rem 0.45rem',
+                borderRadius: 'var(--radius-full)'
+              }}>
+                {savedCount}
+              </span>
+            )}
           </NavLink>
 
           <NavLink
@@ -134,21 +176,25 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }} className="desktop-auth">
           {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                color: 'var(--text-main)',
-                backgroundColor: 'var(--bg-muted)',
-                padding: '0.375rem 0.85rem',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid var(--border-light)'
-              }}>
+              <Link
+                to="/profile"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: 'var(--text-main)',
+                  backgroundColor: 'var(--bg-muted)',
+                  padding: '0.375rem 0.85rem',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid var(--border-light)',
+                  transition: 'background-color 0.15s ease'
+                }}
+              >
                 <User size={14} color="var(--primary)" />
-                <span>{user?.name || 'Account'}</span>
-              </div>
+                <span>{user?.name || 'Profile'}</span>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="btn btn-secondary btn-sm"
@@ -206,7 +252,23 @@ export default function Navbar() {
             style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
           >
             <Compass size={18} color="var(--primary)" />
-            <span>Explore Events</span>
+            <span>Explore All Events</span>
+          </Link>
+          <Link
+            to="/events?tab=recommendations"
+            onClick={closeMenu}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Sparkles size={18} color="var(--primary)" />
+            <span>Smart Discovery</span>
+          </Link>
+          <Link
+            to="/events?tab=saved"
+            onClick={closeMenu}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Heart size={18} color={savedCount > 0 ? '#EF4444' : 'var(--primary)'} fill={savedCount > 0 ? '#EF4444' : 'transparent'} />
+            <span>Wishlist ({savedCount})</span>
           </Link>
           <Link
             to="/my-bookings"
@@ -216,6 +278,16 @@ export default function Navbar() {
             <Ticket size={18} color="var(--primary)" />
             <span>My Passes</span>
           </Link>
+          {isAuthenticated && (
+            <Link
+              to="/profile"
+              onClick={closeMenu}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+            >
+              <User size={18} color="var(--primary)" />
+              <span>My Profile &amp; Preferences</span>
+            </Link>
+          )}
 
           <div style={{ paddingTop: '0.75rem', borderTop: '1px solid var(--border-light)' }}>
             {isAuthenticated ? (

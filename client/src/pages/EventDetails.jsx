@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Calendar, MapPin, ShieldCheck, ArrowLeft, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, ShieldCheck, ArrowLeft, Lock, AlertCircle, Loader2, Heart } from 'lucide-react';
 import { fetchEventById } from '../api/events';
 import { createHold } from '../api/holds';
 import { useAuth } from '../context/AuthContext';
 import { useHold } from '../context/HoldContext';
+import { useWishlist } from '../context/WishlistContext';
 import QuantitySelector from '../components/QuantitySelector';
+import SeatSelector from '../components/SeatSelector';
 import OrderSummary from '../components/OrderSummary';
 import LoadingState from '../components/LoadingState';
 import ErrorMessage from '../components/ErrorMessage';
@@ -15,11 +17,13 @@ export default function EventDetails() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { setHold } = useHold();
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSeats, setSelectedSeats] = useState(['A3']);
   const [reserving, setReserving] = useState(false);
   const [reserveError, setReserveError] = useState(null);
 
@@ -29,6 +33,23 @@ export default function EventDetails() {
       setError(null);
       const res = await fetchEventById(id);
       setEvent(res.event);
+
+      // Default first available seat
+      const occupied = new Set(res.event?.occupiedSeats || []);
+      const rows = res.event?.seatRows || ['A', 'B', 'C', 'D'];
+      let firstAvailable = 'A1';
+      for (const r of rows) {
+        for (let num = 1; num <= (res.event?.seatsPerRow || 8); num++) {
+          const sId = `${r}${num}`;
+          if (!occupied.has(sId)) {
+            firstAvailable = sId;
+            break;
+          }
+        }
+        if (firstAvailable !== 'A1') break;
+      }
+      setSelectedSeats([firstAvailable]);
+      setQuantity(1);
     } catch (err) {
       setError(err.message || 'Unable to load event details');
     } finally {
@@ -40,6 +61,16 @@ export default function EventDetails() {
     loadEvent();
   }, [id]);
 
+  const handleSeatsChange = (newSeats) => {
+    if (newSeats.length === 0) {
+      setSelectedSeats([]);
+      setQuantity(1);
+    } else {
+      setSelectedSeats(newSeats);
+      setQuantity(newSeats.length);
+    }
+  };
+
   const handleReserve = async () => {
     if (!event) return;
 
@@ -49,14 +80,15 @@ export default function EventDetails() {
       return;
     }
 
-    // 2. Submit hold request to authoritative backend
+    // 2. Submit hold request with selected seats to authoritative backend
     try {
       setReserving(true);
       setReserveError(null);
 
       const res = await createHold({
         eventId: event.id,
-        quantity
+        quantity: selectedSeats.length > 0 ? selectedSeats.length : quantity,
+        selectedSeats: selectedSeats.length > 0 ? selectedSeats : [`A${quantity}`]
       });
 
       // 3. Store valid hold in context & navigate to checkout
@@ -109,6 +141,7 @@ export default function EventDetails() {
         {/* Left Column: Event Media & Information */}
         <div>
           <div style={{
+            position: 'relative',
             borderRadius: 'var(--radius-lg)',
             overflow: 'hidden',
             backgroundColor: 'var(--bg-muted)',
@@ -122,6 +155,36 @@ export default function EventDetails() {
               alt={event.title}
               style={{ width: '100%', height: '360px', objectFit: 'cover' }}
             />
+            {/* Wishlist Bookmark Button */}
+            <button
+              type="button"
+              onClick={() => toggleWishlist(event.id)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(6px)',
+                border: '1px solid var(--border-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                transition: 'transform 0.15s ease'
+              }}
+              title={isWishlisted(event.id) ? "Saved in wishlist" : "Add to wishlist"}
+              aria-label={isWishlisted(event.id) ? "Saved in wishlist" : "Add to wishlist"}
+            >
+              <Heart
+                size={20}
+                color={isWishlisted(event.id) ? '#EF4444' : '#64748B'}
+                fill={isWishlisted(event.id) ? '#EF4444' : 'transparent'}
+              />
+            </button>
           </div>
 
           <div style={{
@@ -217,22 +280,14 @@ export default function EventDetails() {
               )}
             </div>
 
-            {/* Quantity Selector */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label className="form-label">Select Passes to Reserve</label>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <QuantitySelector
-                  quantity={quantity}
-                  onChange={setQuantity}
-                  min={1}
-                  max={maxAllowed}
-                  disabled={!isAvailable || reserving}
-                />
-                <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                  Limit {maxAllowed} passes/order
-                </span>
-              </div>
-            </div>
+            {/* Interactive Numbered Seat Selection Map */}
+            <SeatSelector
+              event={event}
+              selectedSeats={selectedSeats}
+              onSeatsChange={handleSeatsChange}
+              maxAllowed={maxAllowed}
+              disabled={!isAvailable || reserving}
+            />
 
             {/* Error Message if Hold Fails */}
             {reserveError && (
@@ -286,8 +341,9 @@ export default function EventDetails() {
           {/* Real-time Order Summary Preview */}
           <OrderSummary
             eventTitle={event.title}
-            quantity={quantity}
+            quantity={selectedSeats.length > 0 ? selectedSeats.length : quantity}
             unitPrice={event.price}
+            selectedSeats={selectedSeats}
           />
         </div>
       </div>

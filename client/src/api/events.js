@@ -18,12 +18,17 @@ export async function fetchEvents(params = {}) {
     if (params.category && params.category !== 'all') {
       events = events.filter(e => e.category === params.category);
     }
+    if (params.city && params.city !== 'all') {
+      events = events.filter(e => e.city && e.city.toLowerCase() === params.city.toLowerCase());
+    }
     if (params.search) {
       const q = params.search.toLowerCase();
       events = events.filter(e => 
         e.title.toLowerCase().includes(q) ||
         (e.artist && e.artist.toLowerCase().includes(q)) ||
-        (e.venue && e.venue.toLowerCase().includes(q))
+        (e.venue && e.venue.toLowerCase().includes(q)) ||
+        (e.city && e.city.toLowerCase().includes(q)) ||
+        (e.category && e.category.toLowerCase().includes(q))
       );
     }
     return { events, isMock: true };

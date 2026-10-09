@@ -42,6 +42,7 @@ export async function confirmBooking({ holdId, customerInfo, paymentMethod, idem
       date: hold.date,
       time: hold.time,
       quantity: hold.quantity,
+      selectedSeats: hold.selectedSeats || [],
       unitPrice: hold.unitPrice,
       totalAmount: (hold.unitPrice * hold.quantity) + (3.50 * hold.quantity), // with service fee
       customerName: customerInfo.name,

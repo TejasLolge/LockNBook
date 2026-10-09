@@ -5,6 +5,7 @@ export default function OrderSummary({
   eventTitle,
   quantity,
   unitPrice,
+  selectedSeats = [],
   feePerTicket = 3.50,
   currency = 'USD'
 }) {
@@ -38,6 +39,15 @@ export default function OrderSummary({
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.875rem' }}>
+        {selectedSeats && selectedSeats.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+            <span>Assigned Seats</span>
+            <span style={{ fontWeight: 700, color: 'var(--primary)', fontFamily: 'monospace' }}>
+              {selectedSeats.join(', ')}
+            </span>
+          </div>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
           <span>Admission Passes ({quantity} &times; ${unitPrice})</span>
           <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>${subtotal.toFixed(2)}</span>

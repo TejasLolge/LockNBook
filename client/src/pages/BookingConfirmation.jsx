@@ -178,6 +178,17 @@ export default function BookingConfirmation() {
                   ${booking.totalAmount?.toFixed(2) || (booking.unitPrice * booking.quantity).toFixed(2)}
                 </div>
               </div>
+
+              {booking.selectedSeats && booking.selectedSeats.length > 0 && (
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                    Assigned Seats
+                  </span>
+                  <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--primary)', marginTop: '0.25rem', fontFamily: 'monospace' }}>
+                    {booking.selectedSeats.join(', ')}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Perforated Divider */}

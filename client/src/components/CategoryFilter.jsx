@@ -1,12 +1,14 @@
 import React from 'react';
 
 const CATEGORIES = [
-  { id: 'all', label: 'All Events' },
-  { id: 'music', label: 'Music & Concerts' },
-  { id: 'conference', label: 'Conferences & Tech' },
-  { id: 'sports', label: 'Sports & Racing' },
-  { id: 'comedy', label: 'Comedy' },
-  { id: 'theatre', label: 'Theatre & Arts' }
+  { id: 'all', label: 'All Categories' },
+  { id: 'music', label: '🎵 Concerts & Music' },
+  { id: 'movies', label: '🎬 Movies & Cinema' },
+  { id: 'trains', label: '🚅 Bullet Trains' },
+  { id: 'buses', label: '🚌 Sleeper Buses' },
+  { id: 'sports', label: '🏎️ Sports & Racing' },
+  { id: 'theatre', label: '🎭 Theatre & Symphonies' },
+  { id: 'conference', label: '💻 Tech Summits' }
 ];
 
 export default function CategoryFilter({ selectedCategory, onSelectCategory }) {

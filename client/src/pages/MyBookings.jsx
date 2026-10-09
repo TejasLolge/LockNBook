@@ -129,6 +129,7 @@ export default function MyBookings() {
                     </div>
                     <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
                       {b.quantity} Ticket(s)
+                      {b.selectedSeats && b.selectedSeats.length > 0 && ` • Seats: ${b.selectedSeats.join(', ')}`}
                     </div>
                   </div>
                 </div>

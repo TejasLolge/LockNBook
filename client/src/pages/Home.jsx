@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShieldCheck, Clock, Zap, ArrowRight, Sparkles, Flame } from 'lucide-react';
+import { Search, ShieldCheck, Clock, Zap, ArrowRight, Sparkles, Flame, Heart } from 'lucide-react';
 import { fetchEvents } from '../api/events';
 import EventCard from '../components/EventCard';
+import CategoryShowcase from '../components/CategoryShowcase';
 import LoadingState from '../components/LoadingState';
 import ErrorMessage from '../components/ErrorMessage';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Home() {
   const [events, setEvents] = useState([]);
@@ -12,6 +14,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isMock, setIsMock] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { interests, toggleInterest } = useWishlist();
   const navigate = useNavigate();
 
   const loadData = async () => {
@@ -156,10 +159,11 @@ export default function Home() {
           }}>
             <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600 }}>Quick Explore:</span>
             {[
-              { label: '🎵 Music Concerts', cat: 'music' },
-              { label: '💻 Tech Summits', cat: 'conference' },
+              { label: '🎵 Concerts', cat: 'music' },
+              { label: '🎬 Movies', cat: 'movies' },
+              { label: '🚅 Bullet Trains', cat: 'trains' },
+              { label: '🚌 Luxury Buses', cat: 'buses' },
               { label: '🏎️ Motorsports', cat: 'sports' },
-              { label: '🎙️ Standup Comedy', cat: 'comedy' },
               { label: '🎭 Theatre & Symphonies', cat: 'theatre' }
             ].map(item => (
               <Link
@@ -170,7 +174,7 @@ export default function Home() {
                   fontWeight: 600,
                   color: 'var(--text-secondary)',
                   backgroundColor: 'var(--bg-muted)',
-                  padding: '0.3rem 0.85rem',
+                  padding: '0.35rem 0.85rem',
                   borderRadius: 'var(--radius-full)',
                   transition: 'all 0.15s ease',
                   border: '1px solid var(--border-light)'
@@ -271,8 +275,97 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Visual Category Showcase Grid */}
+      <CategoryShowcase />
+
+      {/* Smart Discovery & Personalized Recommendations Section */}
+      <section className="container" style={{ paddingTop: '3.5rem' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          marginBottom: '1.75rem',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+              <span className="badge badge-info" style={{ gap: '0.3rem' }}>
+                <Sparkles size={12} />
+                <span>Smart Discovery</span>
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Deterministic Matching</span>
+            </div>
+            <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.025em', margin: 0 }}>
+              Recommended for You
+            </h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+              Tailored event passes and travel departures matching your selected interests.
+            </p>
+          </div>
+
+          {/* Real-time Interest Filter Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              Tuning:
+            </span>
+            {[
+              { id: 'music', label: '🎵 Concerts' },
+              { id: 'movies', label: '🎬 Movies' },
+              { id: 'trains', label: '🚅 Trains' },
+              { id: 'buses', label: '🚌 Buses' },
+              { id: 'sports', label: '🏎️ Sports' },
+              { id: 'theatre', label: '🎭 Theatre' }
+            ].map(opt => {
+              const active = interests.includes(opt.id);
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => toggleInterest(opt.id)}
+                  style={{
+                    padding: '0.25rem 0.65rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    borderRadius: 'var(--radius-full)',
+                    border: '1px solid',
+                    borderColor: active ? 'var(--primary)' : 'var(--border-light)',
+                    backgroundColor: active ? 'var(--primary-light)' : 'var(--bg-white)',
+                    color: active ? 'var(--primary)' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={`Toggle ${opt.label} recommendations`}
+                >
+                  {opt.label} {active && '✓'}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {loading && <LoadingState message="Curating personalized experiences..." />}
+        {error && <ErrorMessage message={error} onRetry={loadData} />}
+
+        {!loading && !error && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '4rem'
+          }}>
+            {(events.filter(e => interests.includes(e.category)).length > 0
+              ? events.filter(e => interests.includes(e.category))
+              : events
+            ).slice(0, 4).map(event => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Featured Experiences Section */}
-      <section className="container" style={{ paddingTop: '3.75rem' }}>
+      <section className="container" style={{ paddingTop: '1rem' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -286,17 +379,13 @@ export default function Home() {
               Curated Headliners
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              Top verified live experiences with guaranteed seat locking.
+              Top verified live experiences and premium express routes with guaranteed seat locking.
             </p>
           </div>
           <Link to="/events" className="btn btn-secondary btn-sm" style={{ gap: '0.375rem' }}>
-            <span>Explore All Events</span>
-            <ArrowRight size={14} />
+            <span>Explore All Events &rarr;</span>
           </Link>
         </div>
-
-        {loading && <LoadingState message="Fetching live event availability..." />}
-        {error && <ErrorMessage message={error} onRetry={loadData} />}
 
         {!loading && !error && (
           <div style={{
@@ -319,7 +408,7 @@ export default function Home() {
               Upcoming on the Calendar
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              Exciting concerts, developer hackathons, and motorsport championships.
+              Exciting concerts, bullet train departures, film screenings, and motorsport races.
             </p>
           </div>
 

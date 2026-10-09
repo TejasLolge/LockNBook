@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, ArrowRight, Flame } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, Flame, Heart, Train, Bus, Film, Music, Trophy, Sparkles } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function EventCard({ event }) {
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const isSaved = isWishlisted(event.id);
+
   const isAvailable = event.availableInventory === undefined || event.availableInventory > 0;
   const isLowStock = event.availableInventory !== undefined && event.availableInventory > 0 && event.availableInventory <= 12;
 
@@ -17,15 +21,27 @@ export default function EventCard({ event }) {
     return event.date;
   })();
 
+  const getCategoryIcon = (cat) => {
+    switch (cat) {
+      case 'trains': return <Train size={12} />;
+      case 'buses': return <Bus size={12} />;
+      case 'movies': return <Film size={12} />;
+      case 'music': return <Music size={12} />;
+      case 'sports': return <Trophy size={12} />;
+      default: return <Sparkles size={12} />;
+    }
+  };
+
   return (
     <article className="card" style={{
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
-      height: '100%'
+      height: '100%',
+      position: 'relative'
     }}>
       {/* Event Media Banner with Zoom on Hover */}
-      <div className="card-media" style={{ height: '190px', backgroundColor: 'var(--bg-muted)' }}>
+      <div className="card-media" style={{ height: '190px', backgroundColor: 'var(--bg-muted)', position: 'relative' }}>
         <img
           src={event.image}
           alt={event.title}
@@ -49,24 +65,65 @@ export default function EventCard({ event }) {
             padding: '0.25rem 0.65rem',
             borderRadius: 'var(--radius-full)',
             border: '1px solid var(--border-light)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.06)'
+            boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem'
           }}>
-            {event.category}
+            {getCategoryIcon(event.category)}
+            <span>{event.category}</span>
           </span>
         )}
+
+        {/* Wishlist Heart Bookmark Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist(event.id);
+          }}
+          title={isSaved ? "Remove from wishlist" : "Save to wishlist"}
+          style={{
+            position: 'absolute',
+            top: '0.85rem',
+            right: '0.85rem',
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(6px)',
+            border: '1px solid var(--border-light)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.15s ease'
+          }}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.88)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          aria-label={isSaved ? "Saved" : "Save"}
+        >
+          <Heart
+            size={16}
+            color={isSaved ? '#EF4444' : '#64748B'}
+            fill={isSaved ? '#EF4444' : 'transparent'}
+          />
+        </button>
 
         {/* Real-time Inventory Badge */}
         {event.availableInventory !== undefined && (
           <span style={{
             position: 'absolute',
-            top: '0.85rem',
-            right: '0.85rem',
+            bottom: '0.85rem',
+            left: '0.85rem',
             backgroundColor: !isAvailable ? 'var(--danger-bg)' : isLowStock ? 'var(--warning-bg)' : 'rgba(255, 255, 255, 0.95)',
             color: !isAvailable ? 'var(--danger)' : isLowStock ? 'var(--warning)' : 'var(--text-main)',
             border: `1px solid ${!isAvailable ? 'var(--danger-border)' : isLowStock ? 'var(--warning-border)' : 'var(--border-light)'}`,
             fontSize: '0.72rem',
             fontWeight: 700,
-            padding: '0.25rem 0.65rem',
+            padding: '0.2rem 0.6rem',
             borderRadius: 'var(--radius-full)',
             display: 'flex',
             alignItems: 'center',
