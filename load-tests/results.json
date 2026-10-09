@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-10-09 12:10:29 UTC",
+  "total_requests": 150,
+  "initial_inventory": 100,
+  "final_reported_inventory": 24,
+  "metrics": {
+    "successful_holds": 76,
+    "rejected_requests_409": 0,
+    "errors": 74,
+    "oversold_count": 0,
+    "test_duration_sec": 2.241,
+    "throughput_req_sec": 66.95,
+    "latency_p50_ms": 1101.77,
+    "latency_p95_ms": 2103.76,
+    "latency_p99_ms": 2139.88
+  },
+  "correctness_passed": true
+}
