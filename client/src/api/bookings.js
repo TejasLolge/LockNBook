@@ -43,6 +43,7 @@ export async function confirmBooking({ holdId, customerInfo, paymentMethod, idem
       time: hold.time,
       quantity: hold.quantity,
       selectedSeats: hold.selectedSeats || [],
+      rawSeatKeys: hold.rawSeatKeys || [],
       unitPrice: hold.unitPrice,
       totalAmount: (hold.unitPrice * hold.quantity) + (3.50 * hold.quantity), // with service fee
       customerName: customerInfo.name,
@@ -90,15 +91,25 @@ export async function cancelBooking(bookingId) {
     const res = await apiClient.post(`/bookings/${bookingId}/cancel`, {});
     return { success: true, isMock: false };
   } catch (err) {
-    console.warn(`[LockNBook API] Cancelling booking ${bookingId} via dev adapter`);
+    console.warn(`[LockNBook API] Cancelling and releasing booking ${bookingId} via dev adapter`);
     const bookings = mockStore.getBookings();
     const booking = bookings.find(b => b.bookingId === bookingId || b.bookingRef === bookingId);
     if (booking) {
       booking.status = 'CANCELLED';
+      booking.releasedAt = new Date().toISOString();
       const events = mockStore.getEvents();
       const event = events.find(e => e.id === booking.eventId);
       if (event) {
-        event.availableInventory += booking.quantity;
+        event.availableInventory = Math.min(event.totalCapacity, (event.availableInventory || 0) + booking.quantity);
+        if (Array.isArray(event.occupiedSeats)) {
+          const seatsToFree = new Set([
+            ...(booking.rawSeatKeys || []),
+            ...(booking.selectedSeats || [])
+          ]);
+          event.occupiedSeats = event.occupiedSeats.filter(
+            s => !seatsToFree.has(s) && !seatsToFree.has(String(s)) && !seatsToFree.has(Number(s))
+          );
+        }
         mockStore.saveEvents(events);
       }
       localStorage.setItem('lnb_mock_bookings', JSON.stringify(bookings));
