@@ -82,13 +82,13 @@ export default function Login() {
             Sign In to LockNBook
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-            Access your bookings and secure reservation holds.
+            Access verified tickets and secure concurrency holds.
           </p>
         </div>
 
         {error && (
           <div style={{
-            padding: '0.75rem',
+            padding: '0.75rem 1rem',
             backgroundColor: 'var(--danger-bg)',
             border: '1px solid var(--danger-border)',
             borderRadius: 'var(--radius-md)',
@@ -166,7 +166,7 @@ export default function Login() {
                 <span>Signing In...</span>
               </>
             ) : (
-              <span>Sign In</span>
+              <span>Sign In to Account</span>
             )}
           </button>
 
@@ -174,10 +174,10 @@ export default function Login() {
             type="button"
             onClick={handleDemoSignIn}
             className="btn btn-secondary"
-            style={{ width: '100%', fontSize: '0.875rem' }}
+            style={{ width: '100%', fontSize: '0.8125rem', gap: '0.375rem' }}
             disabled={loading}
           >
-            Quick 1-Click Demo Login
+            <span>✨ 1-Click Instant Demo Login</span>
           </button>
         </form>
 

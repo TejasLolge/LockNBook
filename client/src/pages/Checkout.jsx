@@ -40,14 +40,14 @@ export default function Checkout() {
       <div className="container" style={{ paddingTop: '3.5rem', textAlign: 'center' }}>
         <div className="card" style={{ maxWidth: '520px', margin: '0 auto', padding: '3rem 2rem' }}>
           <AlertTriangle size={36} color="var(--warning)" style={{ marginBottom: '1rem' }} />
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.75rem' }}>
-            No Active Reservation Hold
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+            No Active Reservation
           </h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem', lineHeight: 1.5 }}>
-            To protect available inventory from overbooking, checkouts require an active server-backed ticket hold.
+            To guarantee zero overselling, checkout requires an active server-backed ticket hold. Select an event to secure your seats before proceeding.
           </p>
           <Link to="/events" className="btn btn-primary">
-            Browse Live Events &rarr;
+            Discover Events &amp; Reserve Passes &rarr;
           </Link>
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function Checkout() {
   };
 
   const handleCancelHold = async () => {
-    if (confirm('Cancel your held reservation? Your seats will be immediately returned to the available inventory pool.')) {
+    if (confirm('Cancel your held reservation? Your seats will be immediately released back into the public inventory.')) {
       try {
         await releaseHold(activeHold.holdId);
       } catch (e) {
@@ -105,7 +105,54 @@ export default function Checkout() {
   };
 
   return (
-    <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '4rem' }}>
+    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+      {/* 3-Step Concurrency Checkout Stepper */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.75rem',
+        marginBottom: '2rem',
+        flexWrap: 'wrap'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+          fontSize: '0.8125rem',
+          fontWeight: 700,
+          color: 'var(--success)'
+        }}>
+          <CheckCircle2 size={16} />
+          <span>1. Passes Locked</span>
+        </div>
+        <span style={{ color: 'var(--border-hover)' }}>&rarr;</span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+          fontSize: '0.8125rem',
+          fontWeight: 700,
+          color: 'var(--primary)',
+          backgroundColor: 'var(--primary-light)',
+          padding: '0.25rem 0.75rem',
+          borderRadius: 'var(--radius-full)'
+        }}>
+          <span>2. Attendee Details</span>
+        </div>
+        <span style={{ color: 'var(--border-hover)' }}>&rarr;</span>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+          fontSize: '0.8125rem',
+          fontWeight: 600,
+          color: 'var(--text-muted)'
+        }}>
+          <span>3. Digital Ticket</span>
+        </div>
+      </div>
+
       {/* Top Navigation & Countdown Bar */}
       <div style={{
         display: 'flex',
@@ -113,7 +160,7 @@ export default function Checkout() {
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '1rem',
-        marginBottom: '2rem'
+        marginBottom: '1.75rem'
       }}>
         <button
           onClick={handleCancelHold}
@@ -121,7 +168,7 @@ export default function Checkout() {
           style={{ gap: '0.375rem' }}
         >
           <ArrowLeft size={14} />
-          <span>Cancel & Release Hold</span>
+          <span>Release Hold &amp; Return</span>
         </button>
 
         <CountdownTimer
@@ -148,15 +195,15 @@ export default function Checkout() {
             <AlertTriangle size={24} color="var(--danger)" style={{ flexShrink: 0 }} />
             <div>
               <div style={{ fontWeight: 700, color: 'var(--danger)', fontSize: '1rem' }}>
-                Reservation Window Elapsed
+                Reservation Window Timed Out
               </div>
               <div style={{ fontSize: '0.875rem', color: '#991B1B' }}>
-                Your server hold expired to prevent inventory hoarding. Your tickets have been safely returned to the pool.
+                Your 5-minute checkout hold expired. The reserved seats were safely restored to the available pool.
               </div>
             </div>
           </div>
           <Link to={`/events/${activeHold.eventId}`} className="btn btn-danger btn-sm">
-            Re-select Tickets
+            Re-select Tickets &rarr;
           </Link>
         </div>
       )}
@@ -171,16 +218,16 @@ export default function Checkout() {
         {/* Left Column: Checkout & Simulated Payment Form */}
         <div>
           <div className="card" style={{ padding: '2rem', backgroundColor: 'var(--bg-white)', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.25rem' }}>
-              Attendee & Payment Details
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.25rem', letterSpacing: '-0.01em' }}>
+              Attendee &amp; Checkout Information
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Simulated payment confirmation backed by server inventory locking.
+              Digital passes and entry barcode will be issued to these contact details.
             </p>
 
             {error && (
               <div style={{
-                padding: '0.75rem',
+                padding: '0.75rem 1rem',
                 backgroundColor: 'var(--danger-bg)',
                 border: '1px solid var(--danger-border)',
                 borderRadius: 'var(--radius-md)',
@@ -194,41 +241,44 @@ export default function Checkout() {
 
             <form onSubmit={handleConfirmPayment}>
               <div className="form-group">
-                <label className="form-label">Full Name</label>
+                <label className="form-label">Primary Attendee Full Name</label>
                 <input
                   type="text"
                   className="form-input"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="e.g. Alex Morgan"
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Email Address (for Digital Passes)</label>
+                <label className="form-label">Email Address (for Digital Passes &amp; QR Code)</label>
                 <input
                   type="email"
                   className="form-input"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
+                  placeholder="name@domain.com"
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Mobile Phone (SMS pass delivery)</label>
+                <label className="form-label">Mobile Number (SMS Entry Updates)</label>
                 <input
                   type="tel"
                   className="form-input"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="+1 (555) 000-0000"
                   required
                 />
               </div>
 
               {/* Payment Methods */}
               <div style={{ marginTop: '1.75rem', marginBottom: '1.25rem' }}>
-                <label className="form-label">Select Payment Method (Simulated)</label>
+                <label className="form-label">Select Payment Method (Simulation Mode)</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                   {[
                     { id: 'card', label: 'Credit Card', icon: CreditCard },
@@ -313,14 +363,20 @@ export default function Checkout() {
               {/* Concurrency Idempotency Notice */}
               <div style={{
                 fontSize: '0.75rem',
-                color: 'var(--text-muted)',
+                color: 'var(--text-secondary)',
                 marginBottom: '1.25rem',
+                padding: '0.625rem 0.875rem',
+                backgroundColor: 'var(--bg-muted)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-light)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.375rem'
+                gap: '0.5rem'
               }}>
-                <ShieldCheck size={14} color="var(--primary)" />
-                <span>Idempotency Protected: <code>{idempotencyKey.slice(0, 16)}...</code></span>
+                <ShieldCheck size={16} color="var(--primary)" style={{ flexShrink: 0 }} />
+                <span>
+                  <strong>Atomic Transaction Active:</strong> Idempotency Key <code>{idempotencyKey.slice(0, 16)}...</code> prevents duplicate charges.
+                </span>
               </div>
 
               {/* Submit Button */}
@@ -333,10 +389,10 @@ export default function Checkout() {
                 {submitting ? (
                   <>
                     <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                    <span>Verifying with Backend Engine...</span>
+                    <span>Confirming with Reservation Engine...</span>
                   </>
                 ) : (
-                  <span>Confirm Simulated Payment &rarr;</span>
+                  <span>Authorize &amp; Issue Passes &rarr;</span>
                 )}
               </button>
             </form>

@@ -101,10 +101,10 @@ export default function EventBrowser() {
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: '0.375rem' }}>
-          Explore Events
+          Discover Live Experiences
         </h1>
         <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)' }}>
-          Browse verified events with authoritative inventory and reservation holds.
+          Browse high-demand concerts, festivals, and tech summits with guaranteed concurrency holds.
         </p>
       </div>
 
@@ -289,9 +289,9 @@ export default function EventBrowser() {
 
       {!loading && !error && sortedEvents.length === 0 && (
         <EmptyState
-          title="No events match your search"
-          description="Try modifying your search terms, changing the category, or clearing filters."
-          actionLabel="Clear Filters"
+          title="No Matching Events Found"
+          description="We couldn't find any live events matching your search or filters. Try adjusting your query or resetting all filters."
+          actionLabel="Reset All Filters"
           onAction={handleClearFilters}
         />
       )}

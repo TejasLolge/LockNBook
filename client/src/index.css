@@ -1,15 +1,17 @@
 /* ==========================================================================
-   LockNBook Design System — Clean White Background Theme
+   LockNBook Design System — Refined Premium White Theme
    Inspired by modern travel & event platforms (Airbnb, Booking.com, Eventbrite)
    ========================================================================== */
 
 :root {
-  /* Brand Primary */
+  /* Brand Primary & Accents */
   --primary: #2563EB;
   --primary-hover: #1D4ED8;
-  --primary-focus: rgba(37, 99, 235, 0.2);
+  --primary-active: #1E40AF;
+  --primary-focus: rgba(37, 99, 235, 0.18);
   --primary-light: #EFF6FF;
   --primary-border: #BFDBFE;
+  --primary-gradient: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
 
   /* Surfaces & Backgrounds */
   --bg-page: #F8FAFC;
@@ -49,13 +51,14 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
+  --radius-xl: 22px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
-  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  /* Multi-layered Soft Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 3px 8px -2px rgba(15, 23, 42, 0.04);
+  --shadow-modal: 0 20px 35px -5px rgba(15, 23, 42, 0.12), 0 10px 15px -5px rgba(15, 23, 42, 0.05);
 
   /* Layout Container */
   --max-width: 1200px;
@@ -72,13 +75,15 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-family);
   background-color: var(--bg-page);
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -90,6 +95,13 @@ body {
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 a {
@@ -107,7 +119,7 @@ button {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
 }
 
 .card:hover {
@@ -115,7 +127,7 @@ button {
   box-shadow: var(--shadow-hover);
 }
 
-/* Buttons */
+/* Buttons with tactile feedback */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -127,17 +139,23 @@ button {
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   white-space: nowrap;
 }
 
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
 .btn-primary {
-  background-color: var(--primary);
+  background: var(--primary-gradient);
   color: var(--text-inverse);
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
 }
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--primary-hover);
+  background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
 }
 .btn-primary:focus-visible {
   outline: 3px solid var(--primary-focus);
@@ -165,16 +183,18 @@ button {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   font-size: 0.8125rem;
   border-radius: var(--radius-sm);
 }
 
 .btn-lg {
-  padding: 0.75rem 1.75rem;
+  padding: 0.85rem 1.85rem;
   font-size: 1rem;
   border-radius: var(--radius-md);
 }
@@ -258,10 +278,22 @@ button {
 
 /* Pulse Animation for Live Hold Timer */
 @keyframes timerPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(0.96); }
 }
 
 .pulse-timer {
   animation: timerPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Image zoom effect on card */
+.card-media {
+  overflow: hidden;
+  position: relative;
+}
+.card-media img {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover .card-media img {
+  transform: scale(1.035);
 }

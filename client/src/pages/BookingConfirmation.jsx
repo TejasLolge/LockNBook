@@ -55,10 +55,10 @@ export default function BookingConfirmation() {
   }
 
   return (
-    <div className="container" style={{ paddingTop: '3.5rem', paddingBottom: '4rem', display: 'flex', justifyContent: 'center' }}>
+    <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '4rem', display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: '100%', maxWidth: '640px' }}>
         {/* Success Card Header */}
-        <div className="card" style={{ padding: '2.5rem', backgroundColor: 'var(--bg-white)', textAlign: 'center', marginBottom: '1.5rem' }}>
+        <div className="card" style={{ padding: '2.25rem', backgroundColor: 'var(--bg-white)', textAlign: 'center', marginBottom: '1.5rem' }}>
           <div style={{
             width: '64px',
             height: '64px',
@@ -68,29 +68,30 @@ export default function BookingConfirmation() {
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: '1.25rem'
+            marginBottom: '1.25rem',
+            border: '2px solid var(--success-border)'
           }}>
             <CheckCircle2 size={36} strokeWidth={2.5} />
           </div>
 
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem', color: 'var(--text-main)' }}>
-            Booking Confirmed &amp; Guaranteed!
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+            You&apos;re Confirmed &amp; Going!
           </h1>
           <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 1.5rem', lineHeight: 1.5 }}>
-            Your seats have been atomically committed in the reservation engine. A digital pass confirmation has been sent to your email.
+            Your seats were atomically locked into the reservation engine. Your digital pass and admission credentials are ready below.
           </p>
 
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.75rem',
-            padding: '0.75rem 1.25rem',
+            padding: '0.625rem 1.25rem',
             backgroundColor: 'var(--bg-muted)',
-            borderRadius: 'var(--radius-md)',
+            borderRadius: 'var(--radius-full)',
             border: '1px solid var(--border-light)'
           }}>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-              Booking Reference:
+            <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+              Order Reference:
             </span>
             <span style={{ fontFamily: 'monospace', fontSize: '1.125rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em' }}>
               {booking.bookingRef}
@@ -99,73 +100,133 @@ export default function BookingConfirmation() {
           </div>
         </div>
 
-        {/* Confirmed Ticket Details Card */}
-        <div className="card" style={{ padding: '2rem', backgroundColor: 'var(--bg-white)', marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-light)' }}>
-            Admission Details
-          </h3>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+        {/* Digital Admission Pass Voucher */}
+        <div className="card" style={{
+          backgroundColor: 'var(--bg-white)',
+          marginBottom: '2rem',
+          overflow: 'hidden',
+          border: '1px solid var(--border-light)',
+          boxShadow: 'var(--shadow-card)'
+        }}>
+          {/* Ticket Header Banner */}
+          <div style={{
+            backgroundColor: 'var(--primary)',
+            color: '#FFFFFF',
+            padding: '1.5rem 2rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem'
+          }}>
             <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                Experience
+              <span style={{ fontSize: '0.6875rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.85, fontWeight: 700 }}>
+                Verified Admission Pass
               </span>
-              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
+              <h2 style={{ fontSize: '1.375rem', fontWeight: 800, margin: '0.25rem 0 0', color: '#FFFFFF' }}>
                 {booking.eventTitle}
-              </div>
+              </h2>
             </div>
-
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                Date &amp; Time
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 600, fontSize: '0.9375rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
-                <Calendar size={15} color="var(--primary)" />
-                <span>{booking.date} &bull; {booking.time}</span>
-              </div>
-            </div>
-
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                Venue Location
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 600, fontSize: '0.9375rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
-                <MapPin size={15} color="var(--primary)" />
-                <span>{booking.venue}</span>
-              </div>
-            </div>
-
-            <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                Quantity &amp; Total Paid
-              </span>
-              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
-                {booking.quantity} Ticket(s) &bull; ${booking.totalAmount?.toFixed(2) || (booking.unitPrice * booking.quantity).toFixed(2)}
-              </div>
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: '0.375rem 0.875rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.8125rem',
+              fontWeight: 700
+            }}>
+              {booking.quantity} {booking.quantity === 1 ? 'Pass' : 'Passes'}
             </div>
           </div>
 
-          <div style={{
-            padding: '1rem',
-            backgroundColor: 'var(--bg-muted)',
-            borderRadius: 'var(--radius-md)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '0.75rem'
-          }}>
-            <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-              Pass issued to <strong>{booking.customerName}</strong> ({booking.customerEmail})
+          {/* Ticket Main Details */}
+          <div style={{ padding: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem', marginBottom: '1.75rem' }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Event Date &amp; Time
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
+                  <Calendar size={15} color="var(--primary)" />
+                  <span>{booking.date} &bull; {booking.time}</span>
+                </div>
+              </div>
+
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Venue Location
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
+                  <MapPin size={15} color="var(--primary)" />
+                  <span>{booking.venue}</span>
+                </div>
+              </div>
+
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Primary Attendee
+                </span>
+                <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
+                  {booking.customerName}
+                </div>
+              </div>
+
+              <div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Total Amount Paid
+                </span>
+                <div style={{ fontWeight: 800, fontSize: '1.125rem', color: 'var(--text-main)', marginTop: '0.25rem' }}>
+                  ${booking.totalAmount?.toFixed(2) || (booking.unitPrice * booking.quantity).toFixed(2)}
+                </div>
+              </div>
             </div>
-            <button
-              onClick={() => window.print()}
-              className="btn btn-secondary btn-sm"
-              style={{ gap: '0.375rem' }}
-            >
-              <Printer size={14} />
-              <span>Print Pass</span>
-            </button>
+
+            {/* Perforated Divider */}
+            <div style={{
+              margin: '1.5rem -2rem',
+              borderTop: '2px dashed var(--border-light)',
+              position: 'relative'
+            }} />
+
+            {/* QR / Barcode Verification Section */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1.25rem',
+              paddingTop: '0.5rem'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                  Gate Entry Verification Code
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.125rem' }}>
+                  Present this digital barcode or printout at the door.
+                </div>
+                <div style={{
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.15em',
+                  color: 'var(--text-secondary)',
+                  marginTop: '0.5rem',
+                  padding: '0.375rem 0.625rem',
+                  backgroundColor: 'var(--bg-muted)',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'inline-block'
+                }}>
+                  ||| | | |||| || | || |||| | {booking.bookingRef}
+                </div>
+              </div>
+
+              <button
+                onClick={() => window.print()}
+                className="btn btn-secondary btn-sm"
+                style={{ gap: '0.375rem' }}
+              >
+                <Printer size={15} />
+                <span>Print Admission Pass</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -173,10 +234,10 @@ export default function BookingConfirmation() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
           <Link to="/my-bookings" className="btn btn-secondary">
             <Ticket size={16} />
-            <span>View in My Bookings</span>
+            <span>View All My Bookings</span>
           </Link>
           <Link to="/events" className="btn btn-primary">
-            <span>Explore More Events</span>
+            <span>Discover More Events</span>
             <ArrowRight size={16} />
           </Link>
         </div>

@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Lock, Ticket, User, LogOut, Clock } from 'lucide-react';
+import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useHold } from '../context/HoldContext';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { activeHold } = useHold();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
     navigate('/');
   };
+
+  const closeMenu = () => setMobileMenuOpen(false);
 
   return (
     <header style={{
@@ -28,23 +32,24 @@ export default function Navbar() {
         <div style={{
           backgroundColor: 'var(--primary-light)',
           borderBottom: '1px solid var(--primary-border)',
-          padding: '0.4rem 1rem',
+          padding: '0.45rem 1rem',
           fontSize: '0.8125rem',
           color: 'var(--primary)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '0.5rem',
-          fontWeight: 600
+          fontWeight: 600,
+          textAlign: 'center'
         }}>
           <Clock size={15} className="pulse-timer" />
-          <span>Active Hold: You have tickets reserved for <strong>{activeHold.eventTitle}</strong>.</span>
+          <span>Reserved for you: <strong>{activeHold.eventTitle}</strong> ({activeHold.quantity} passes)</span>
           <Link to="/checkout" style={{
             textDecoration: 'underline',
             fontWeight: 700,
             marginLeft: '0.25rem'
           }}>
-            Complete Checkout &rarr;
+            Checkout &rarr;
           </Link>
         </div>
       )}
@@ -57,38 +62,39 @@ export default function Navbar() {
         gap: '1rem'
       }}>
         {/* Brand Logo */}
-        <Link to="/" style={{
+        <Link to="/" onClick={closeMenu} style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.625rem',
           fontWeight: 800,
           fontSize: '1.25rem',
-          letterSpacing: '-0.02em',
+          letterSpacing: '-0.025em',
           color: 'var(--text-main)'
         }}>
           <div style={{
             width: '36px',
             height: '36px',
-            backgroundColor: 'var(--primary)',
+            background: 'var(--primary-gradient)',
             borderRadius: 'var(--radius-md)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#FFFFFF'
+            color: '#FFFFFF',
+            boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)'
           }}>
-            <Lock size={20} strokeWidth={2.5} />
+            <Lock size={18} strokeWidth={2.5} />
           </div>
           <span>Lock<span style={{ color: 'var(--primary)' }}>N</span>Book</span>
         </Link>
 
-        {/* Navigation Links */}
+        {/* Desktop Navigation Links */}
         <nav style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '1.5rem',
+          gap: '1.75rem',
           fontWeight: 600,
           fontSize: '0.9375rem'
-        }}>
+        }} className="desktop-nav">
           <NavLink
             to="/"
             style={({ isActive }) => ({
@@ -120,12 +126,12 @@ export default function Navbar() {
             })}
           >
             <Ticket size={16} />
-            <span>My Bookings</span>
+            <span>My Passes</span>
           </NavLink>
         </nav>
 
-        {/* User Account / Auth Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* User Account / Auth Actions (Desktop) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }} className="desktop-auth">
           {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{
@@ -136,16 +142,17 @@ export default function Navbar() {
                 fontWeight: 600,
                 color: 'var(--text-main)',
                 backgroundColor: 'var(--bg-muted)',
-                padding: '0.375rem 0.75rem',
-                borderRadius: 'var(--radius-full)'
+                padding: '0.375rem 0.85rem',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid var(--border-light)'
               }}>
-                <User size={15} color="var(--primary)" />
+                <User size={14} color="var(--primary)" />
                 <span>{user?.name || 'Account'}</span>
               </div>
               <button
                 onClick={handleLogout}
                 className="btn btn-secondary btn-sm"
-                title="Sign out"
+                title="Sign out of your account"
               >
                 <LogOut size={14} />
                 <span>Sign Out</span>
@@ -157,12 +164,82 @@ export default function Navbar() {
                 Sign In
               </Link>
               <Link to="/register" className="btn btn-primary btn-sm">
-                Register
+                Get Started
               </Link>
             </div>
           )}
         </div>
+
+        {/* Mobile Hamburger Toggle Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="btn btn-secondary btn-sm mobile-menu-toggle"
+          style={{ display: 'none', padding: '0.4rem', border: 'none' }}
+          aria-label="Toggle navigation menu"
+        >
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
+
+      {/* Mobile Drawer Navigation */}
+      {mobileMenuOpen && (
+        <div style={{
+          backgroundColor: 'var(--bg-white)',
+          borderTop: '1px solid var(--border-light)',
+          padding: '1.25rem 1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          boxShadow: 'var(--shadow-hover)'
+        }}>
+          <Link
+            to="/"
+            onClick={closeMenu}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Home size={18} color="var(--primary)" />
+            <span>Home</span>
+          </Link>
+          <Link
+            to="/events"
+            onClick={closeMenu}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Compass size={18} color="var(--primary)" />
+            <span>Explore Events</span>
+          </Link>
+          <Link
+            to="/my-bookings"
+            onClick={closeMenu}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Ticket size={18} color="var(--primary)" />
+            <span>My Passes</span>
+          </Link>
+
+          <div style={{ paddingTop: '0.75rem', borderTop: '1px solid var(--border-light)' }}>
+            {isAuthenticated ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{user?.name}</span>
+                <button onClick={handleLogout} className="btn btn-secondary btn-sm">Sign Out</button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <Link to="/login" onClick={closeMenu} className="btn btn-secondary" style={{ textAlign: 'center' }}>Sign In</Link>
+                <Link to="/register" onClick={closeMenu} className="btn btn-primary" style={{ textAlign: 'center' }}>Register</Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Responsive Breakpoint CSS */}
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav, .desktop-auth { display: none !important; }
+          .mobile-menu-toggle { display: inline-flex !important; }
+        }
+      `}</style>
     </header>
   );
 }

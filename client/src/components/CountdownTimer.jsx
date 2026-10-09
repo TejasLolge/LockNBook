@@ -37,23 +37,29 @@ export default function CountdownTimer({ expiresAt, onExpire }) {
       display: 'inline-flex',
       alignItems: 'center',
       gap: '0.625rem',
-      padding: '0.5rem 1rem',
-      borderRadius: 'var(--radius-md)',
+      padding: '0.55rem 1.15rem',
+      borderRadius: 'var(--radius-full)',
       backgroundColor: isExpired ? 'var(--danger-bg)' : isWarning ? 'var(--warning-bg)' : 'var(--primary-light)',
       border: `1px solid ${isExpired ? 'var(--danger-border)' : isWarning ? 'var(--warning-border)' : 'var(--primary-border)'}`,
       color: isExpired ? 'var(--danger)' : isWarning ? 'var(--warning)' : 'var(--primary)',
       fontWeight: 700,
-      fontSize: '0.9375rem'
+      fontSize: '0.875rem',
+      boxShadow: 'var(--shadow-sm)'
     }}>
       {isExpired ? (
         <>
-          <AlertTriangle size={18} />
-          <span>Hold Expired</span>
+          <AlertTriangle size={16} />
+          <span>Hold Window Expired &bull; Seats Released</span>
+        </>
+      ) : isWarning ? (
+        <>
+          <Clock size={16} className="pulse-timer" />
+          <span>Hurry! Hold expires in <strong style={{ fontFamily: 'monospace', fontSize: '0.95rem' }}>{formatted}</strong></span>
         </>
       ) : (
         <>
-          <Clock size={18} className="pulse-timer" />
-          <span>Hold Expires in <span style={{ fontFamily: 'monospace', fontSize: '1.0625rem' }}>{formatted}</span></span>
+          <Clock size={16} className="pulse-timer" />
+          <span>Seats held for you: <strong style={{ fontFamily: 'monospace', fontSize: '0.95rem' }}>{formatted}</strong></span>
         </>
       )}
     </div>

@@ -150,7 +150,7 @@ export default function EventDetails() {
 
           {event.artist && (
             <div style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-              Headliner: {event.artist}
+              Featured Artist: <span style={{ color: 'var(--text-main)' }}>{event.artist}</span>
             </div>
           )}
 
@@ -176,17 +176,21 @@ export default function EventDetails() {
           </p>
 
           <div style={{
-            padding: '1rem 1.25rem',
-            backgroundColor: 'var(--bg-muted)',
+            padding: '1.25rem',
+            backgroundColor: 'var(--bg-white)',
             borderRadius: 'var(--radius-md)',
             border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-sm)',
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem'
+            alignItems: 'flex-start',
+            gap: '0.875rem'
           }}>
-            <ShieldCheck size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
-            <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-              <strong>Fair-Queue Guarantee:</strong> Reserving locks your seats directly on Redis/PostgreSQL. No other user can claim your tickets while your countdown is active.
+            <ShieldCheck size={22} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
+                Fair-Queue Concurrency Protection
+              </strong>
+              Reserving these passes acquires a distributed server lock. No competing buyer can purchase or claim your tickets while your 5-minute countdown is active.
             </div>
           </div>
         </div>
@@ -196,24 +200,26 @@ export default function EventDetails() {
           <div className="card" style={{ padding: '1.75rem', backgroundColor: 'var(--bg-white)', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
-                  General Admission
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  Official Admission
                 </span>
-                <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '0.25rem' }}>
                   ${event.price} <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ ticket</span>
                 </div>
               </div>
 
               {event.availableInventory !== undefined && (
-                <span className={`badge ${event.availableInventory > 0 ? 'badge-success' : 'badge-danger'}`}>
-                  {event.availableInventory > 0 ? `${event.availableInventory} Remaining` : 'Sold Out'}
+                <span className={`badge ${event.availableInventory > 0 ? (event.availableInventory <= 20 ? 'badge-warning' : 'badge-success') : 'badge-danger'}`}>
+                  {event.availableInventory > 0 ? (
+                    event.availableInventory <= 20 ? `🔥 Only ${event.availableInventory} Left` : `${event.availableInventory} Remaining`
+                  ) : 'Sold Out'}
                 </span>
               )}
             </div>
 
             {/* Quantity Selector */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label className="form-label">Select Ticket Quantity</label>
+              <label className="form-label">Select Passes to Reserve</label>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <QuantitySelector
                   quantity={quantity}
@@ -223,7 +229,7 @@ export default function EventDetails() {
                   disabled={!isAvailable || reserving}
                 />
                 <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                  Max {maxAllowed} per fan
+                  Limit {maxAllowed} passes/order
                 </span>
               </div>
             </div>
@@ -231,7 +237,7 @@ export default function EventDetails() {
             {/* Error Message if Hold Fails */}
             {reserveError && (
               <div style={{
-                padding: '0.75rem',
+                padding: '0.75rem 1rem',
                 backgroundColor: 'var(--danger-bg)',
                 border: '1px solid var(--danger-border)',
                 borderRadius: 'var(--radius-md)',
@@ -262,18 +268,18 @@ export default function EventDetails() {
               ) : isAvailable ? (
                 <>
                   <Lock size={18} />
-                  <span>Reserve Tickets ({quantity}) &rarr;</span>
+                  <span>Lock Passes &amp; Proceed ({quantity}) &rarr;</span>
                 </>
               ) : (
-                <span>Sold Out</span>
+                <span>Currently Sold Out</span>
               )}
             </button>
             <style>{`
               @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
             `}</style>
 
-            <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Server initiates an exclusive 5-minute hold upon clicking.
+            <div style={{ textAlign: 'center', marginTop: '0.875rem', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+              Reserves an exclusive 5-minute hold upon clicking. No charge until confirmation.
             </div>
           </div>
 

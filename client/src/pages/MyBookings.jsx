@@ -33,7 +33,7 @@ export default function MyBookings() {
   }, []);
 
   const handleCancel = async (bookingId, bookingRef) => {
-    if (!confirm(`Are you sure you want to cancel booking ${bookingRef}? Your reserved inventory will be safely released back to the event pool.`)) {
+    if (!confirm(`Cancel booking ${bookingRef}? Your reserved tickets will be immediately released back to the event inventory.`)) {
       return;
     }
 
@@ -52,7 +52,7 @@ export default function MyBookings() {
   if (loading) {
     return (
       <div className="container" style={{ paddingTop: '3.5rem' }}>
-        <LoadingState message="Fetching your confirmed bookings..." />
+        <LoadingState message="Fetching your verified bookings &amp; passes..." />
       </div>
     );
   }
@@ -61,10 +61,10 @@ export default function MyBookings() {
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '4rem', maxWidth: '860px' }}>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em', marginBottom: '0.375rem' }}>
-          My Bookings &amp; Admission Passes
+          My Bookings &amp; Digital Passes
         </h1>
         <p style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)' }}>
-          View upcoming admission passes or manage your reservations.
+          Access your confirmed admission vouchers, print gate tickets, or manage active reservations.
         </p>
       </div>
 
@@ -73,9 +73,9 @@ export default function MyBookings() {
       {!loading && !error && bookings.length === 0 && (
         <EmptyState
           icon={Ticket}
-          title="No bookings yet"
-          description="You don't have any event reservations currently booked. Explore our live events to find your next experience!"
-          actionLabel="Browse Live Events"
+          title="No Bookings Found"
+          description="You haven't reserved any event tickets yet. Explore upcoming concerts, festivals, and tech conferences to book your spot!"
+          actionLabel="Discover Live Events &rarr;"
           actionLink="/events"
         />
       )}
@@ -151,7 +151,7 @@ export default function MyBookings() {
                       to={`/confirmation/${b.bookingId || b.bookingRef}`}
                       className="btn btn-secondary btn-sm"
                     >
-                      View Digital Pass &rarr;
+                      <span>Digital Pass &rarr;</span>
                     </Link>
 
                     {isConfirmed && (
@@ -163,10 +163,10 @@ export default function MyBookings() {
                         {isCancellingThis ? (
                           <>
                             <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} />
-                            <span>Cancelling...</span>
+                            <span>Releasing...</span>
                           </>
                         ) : (
-                          <span>Cancel &amp; Release</span>
+                          <span>Release Tickets</span>
                         )}
                       </button>
                     )}
