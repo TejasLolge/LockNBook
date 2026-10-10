@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home, Heart, Sparkles, Cpu } from 'lucide-react';
+import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home, Heart, Sparkles, Cpu, Github } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useHold } from '../context/HoldContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -234,6 +234,18 @@ export default function Navbar() {
               </Link>
             </div>
           )}
+
+          <a
+            href="https://github.com/TejasLolge/LockNBook"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary btn-sm"
+            style={{ gap: '0.35rem', fontWeight: 600 }}
+            title="View LockNBook on GitHub"
+          >
+            <Github size={15} />
+            <span>GitHub</span>
+          </a>
         </div>
 
         {/* Mobile Hamburger Toggle Button */}
@@ -312,6 +324,16 @@ export default function Navbar() {
             <Cpu size={18} color="var(--primary)" />
             <span>Architecture &amp; Design</span>
           </Link>
+          <a
+            href="https://github.com/TejasLolge/LockNBook"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Github size={18} color="var(--primary)" />
+            <span>GitHub Repository</span>
+          </a>
           {isAuthenticated && (
             <Link
               to="/profile"

@@ -20,7 +20,9 @@ import {
   Terminal,
   ChevronRight,
   Info,
-  Maximize2
+  Maximize2,
+  Github,
+  ExternalLink
 } from 'lucide-react';
 
 export default function TechnicalArchitecture() {
@@ -285,6 +287,19 @@ export default function TechnicalArchitecture() {
               <Maximize2 size={15} />
               <span>Technical Demo (50s Pitch)</span>
             </button>
+
+            <a
+              href="https://github.com/TejasLolge/LockNBook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-secondary btn-sm"
+              style={{ gap: '0.45rem', fontWeight: 700 }}
+              title="View LockNBook source code on GitHub"
+            >
+              <Github size={15} />
+              <span>GitHub Repo</span>
+              <ExternalLink size={12} style={{ opacity: 0.6 }} />
+            </a>
           </div>
         </div>
 
@@ -1183,9 +1198,29 @@ export default function TechnicalArchitecture() {
               borderTop: '1px solid var(--border-light)',
               paddingTop: '1rem'
             }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Target Coach: Indian Railways Sleeper (SL) &bull; 72 Berths &bull; 9 Bays
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Target Coach: Indian Railways Sleeper (SL) &bull; 72 Berths &bull; 9 Bays
+                </span>
+                <a
+                  href="https://github.com/TejasLolge/LockNBook"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    color: 'var(--primary)',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  <Github size={13} />
+                  <span>github.com/TejasLolge/LockNBook</span>
+                  <ExternalLink size={11} />
+                </a>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowPitchModal(false)}
