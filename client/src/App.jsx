@@ -43,6 +43,7 @@ export default function App() {
                   <Route path="/confirmation/:bookingId" element={<BookingConfirmation />} />
                   <Route path="/my-bookings" element={<MyBookings />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/architecture" element={<Home />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

@@ -60,6 +60,7 @@ export default function Footer() {
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
               <li><Link to="/events" style={{ color: 'inherit' }}>Browse All Events</Link></li>
               <li><Link to="/my-bookings" style={{ color: 'inherit' }}>My Bookings & Passes</Link></li>
+              <li><Link to="/#architecture" style={{ color: 'inherit' }}>Technical Architecture &amp; System Design</Link></li>
               <li><Link to="/login" style={{ color: 'inherit' }}>Account Sign In</Link></li>
               <li><Link to="/register" style={{ color: 'inherit' }}>Create New Account</Link></li>
             </ul>

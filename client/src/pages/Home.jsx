@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShieldCheck, Clock, Zap, ArrowRight, Sparkles, Flame, Heart } from 'lucide-react';
 import { fetchEvents } from '../api/events';
 import EventCard from '../components/EventCard';
 import CategoryShowcase from '../components/CategoryShowcase';
+import TechnicalArchitecture from '../components/TechnicalArchitecture';
 import LoadingState from '../components/LoadingState';
 import ErrorMessage from '../components/ErrorMessage';
 import { useWishlist } from '../context/WishlistContext';
@@ -16,6 +17,16 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const { interests, toggleInterest } = useWishlist();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (window.location.hash.includes('architecture') || location.pathname === '/architecture') {
+      setTimeout(() => {
+        const el = document.getElementById('architecture');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
+  }, [location]);
 
   const loadData = async () => {
     try {
@@ -399,6 +410,9 @@ export default function Home() {
           </div>
         )}
       </section>
+
+      {/* Technical Architecture & Engineering Section */}
+      <TechnicalArchitecture />
 
       {/* Upcoming On the Calendar Section */}
       {!loading && !error && upcomingEvents.length > 0 && (

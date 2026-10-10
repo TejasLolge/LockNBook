@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home, Heart, Sparkles } from 'lucide-react';
+import { Lock, Ticket, User, LogOut, Clock, Menu, X, Compass, Home, Heart, Sparkles, Cpu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useHold } from '../context/HoldContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -170,6 +170,26 @@ export default function Navbar() {
             <Ticket size={16} />
             <span>My Passes</span>
           </NavLink>
+
+          <NavLink
+            to="/#architecture"
+            onClick={(e) => {
+              const el = document.getElementById('architecture');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              color: 'var(--text-secondary)',
+              transition: 'color 0.15s ease'
+            }}
+          >
+            <Cpu size={15} color="var(--primary)" />
+            <span>Architecture</span>
+          </NavLink>
         </nav>
 
         {/* User Account / Auth Actions (Desktop) */}
@@ -277,6 +297,20 @@ export default function Navbar() {
           >
             <Ticket size={18} color="var(--primary)" />
             <span>My Passes</span>
+          </Link>
+          <Link
+            to="/#architecture"
+            onClick={() => {
+              closeMenu();
+              setTimeout(() => {
+                const el = document.getElementById('architecture');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}
+          >
+            <Cpu size={18} color="var(--primary)" />
+            <span>Architecture &amp; Design</span>
           </Link>
           {isAuthenticated && (
             <Link
