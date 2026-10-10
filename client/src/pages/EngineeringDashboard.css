@@ -1,0 +1,122 @@
+
+.engineering-dashboard {
+  width: min(1120px, calc(100% - 32px));
+  margin: 40px auto;
+  color: var(--text-primary, #172033);
+}
+
+.engineering-dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.engineering-dashboard__eyebrow {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.engineering-dashboard__header h1 {
+  margin: 8px 0;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+}
+
+.engineering-dashboard__header p:last-child {
+  color: #64748b;
+}
+
+.engineering-dashboard__refresh {
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #172033;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.engineering-dashboard__refresh:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.engineering-dashboard__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  font-size: 0.9rem;
+}
+
+.engineering-dashboard__status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.engineering-dashboard__status--connected .engineering-dashboard__status-dot {
+  background: #16a34a;
+}
+
+.engineering-dashboard__status--disconnected .engineering-dashboard__status-dot {
+  background: #dc2626;
+}
+
+.engineering-dashboard__error {
+  padding: 14px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #991b1b;
+  overflow-wrap: anywhere;
+}
+
+.engineering-dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.engineering-metric {
+  min-height: 112px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 3px 12px rgb(15 23 42 / 4%);
+}
+
+.engineering-metric__label {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.engineering-metric__value {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.engineering-dashboard__note {
+  margin-top: 22px;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .engineering-dashboard__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { HoldProvider } from './context/HoldContext';
 import { WishlistProvider } from './context/WishlistContext';
+import EngineeringDashboard from './pages/EngineeringDashboard';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -38,6 +39,7 @@ export default function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/engineering" element={<EngineeringDashboard />} />
                   <Route path="/confirmation/:bookingId" element={<BookingConfirmation />} />
                   <Route path="/my-bookings" element={<MyBookings />} />
                   <Route path="/profile" element={<Profile />} />
